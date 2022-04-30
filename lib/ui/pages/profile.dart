@@ -6,8 +6,8 @@ import 'package:smart_watch/services/service.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
-
+  const EditProfile({Key? key, required this.userDocument}) : super(key: key);
+  final userDocument;
   @override
   State<EditProfile> createState() => _EditProfileState();
 }
@@ -19,16 +19,26 @@ class _EditProfileState extends State<EditProfile> {
   final auth = Auth();
   bool isLoading = false;
   String user_id = '';
+  late TextEditingController namecontroller;
+  late TextEditingController emailcontroller;
+  late TextEditingController phonecontroller;
+  late TextEditingController emergencycontroller1;
+  late TextEditingController emergencycontroller2;
+
   final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
   final RegExp _phoneRegex = RegExp(r'^[0-9]{10}$');
   //editing controller
-  final TextEditingController namecontroller = TextEditingController();
-  final TextEditingController emailcontroller = TextEditingController();
-  final TextEditingController phonecontroller = TextEditingController();
-  final TextEditingController addresscontroller = TextEditingController();
-  final TextEditingController emergencycontroller1 = TextEditingController();
-  final TextEditingController emergencycontroller2 = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    namecontroller = TextEditingController(text: widget.userDocument['Name']);
+    emailcontroller = TextEditingController(text: widget.userDocument['Email']);
+    phonecontroller = TextEditingController();
+    emergencycontroller1 = TextEditingController();
+    emergencycontroller2 = TextEditingController();
+  }
+
   validateSignUp() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -291,11 +301,11 @@ class _EditProfileState extends State<EditProfile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Padding(
+                          Padding(
                               padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                               child: Text(
-                                'A little more about you,\n          Balachandra',
-                                style: TextStyle(
+                                'A little more about you,\n          ${widget.userDocument['Name']}',
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
                                 ),

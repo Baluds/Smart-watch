@@ -105,10 +105,11 @@ class _SignupscreenState extends State<Signupscreen> {
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              const Loginscreen()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => const Loginscreen(),
+                    ),
+                  );
                 },
                 child: Text(
                   'Ok',

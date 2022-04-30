@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,7 +12,8 @@ import 'package:smart_watch/ui/pages/welcome.dart';
 import '../../widgets/menu.dart';
 
 class Homepg extends StatefulWidget {
-  const Homepg({Key? key}) : super(key: key);
+  const Homepg({Key? key, required this.user_id}) : super(key: key);
+  final String user_id;
   @override
   State<Homepg> createState() => _HomepgState();
 }
@@ -33,196 +35,241 @@ class _HomepgState extends State<Homepg> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF191847),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage("assets/images/home_bg.png"),
-                fit: BoxFit.cover,
-              )),
+    return StreamBuilder(
+      stream: auth.users.doc(widget.user_id).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasError) {
+          return const Scaffold(
+            backgroundColor: Color(0xFF191847),
+            body: SafeArea(
+              child: Text('Something went wrong'),
             ),
-            Positioned(
-              right: 0,
-              top: MediaQuery.of(context).size.height * 0.06,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.85,
-                width: MediaQuery.of(context).size.width * 0.85,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF4F4F9),
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(0),
-                      bottomRight: Radius.circular(0),
-                      topLeft: Radius.circular(40.0),
-                      bottomLeft: Radius.circular(40.0)),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFF191847),
+            body: SafeArea(
+                child: CircularProgressIndicator(
+              color: Color(0xffFFC76C),
+            )),
+          );
+        }
+        var userDocument = snapshot.data;
+        return Scaffold(
+          backgroundColor: const Color(0xFF191847),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                    image: AssetImage("assets/images/home_bg.png"),
+                    fit: BoxFit.cover,
+                  )),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 140, top: 23),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Hello,",
-                            style: GoogleFonts.nunito(
-                                textStyle: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey)),
-                          ),
-                          Text(
-                            "Balachandra",
-                            style: GoogleFonts.nunito(
-                                textStyle: const TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.w700)),
-                          )
-                        ],
-                      ),
+                Positioned(
+                  right: 0,
+                  top: MediaQuery.of(context).size.height * 0.06,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF4F4F9),
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(0),
+                          bottomRight: Radius.circular(0),
+                          topLeft: Radius.circular(40.0),
+                          bottomLeft: Radius.circular(40.0)),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const FaIcon(FontAwesomeIcons.circleExclamation),
                         Container(
-                          margin: const EdgeInsets.all(10),
-                          child: Text(
-                            "Your device is connected!",
-                            style: GoogleFonts.nunito(
-                                textStyle: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w700)),
+                          margin: const EdgeInsets.only(right: 140, top: 23),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Hello,",
+                                style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey)),
+                              ),
+                              Text(
+                                userDocument['Name'],
+                                style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700)),
+                              )
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                    Menu(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      imageName: "assets/images/Profile.png",
-                      multiple: 1,
-                      callback: () {
-                        print("clicked profile");
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const EditProfile()));
-                      },
-                    ),
-                    Menu(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      imageName: "assets/images/location.png",
-                      multiple: 1,
-                      callback: () {
-                        print("clicked location");
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const MapsPage()));
-                      },
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Menu(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          imageName: "assets/images/SPO2.png",
-                          multiple: 2,
-                          callback: () {
-                            print("Clicked spo2");
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const spo2pg()));
-                          },
                         ),
-                        Menu(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          imageName: "assets/images/SOS.png",
-                          multiple: 3,
-                          callback: () {
-                            print("clicked s0s");
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Menu(
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.15,
-                            imageName: "assets/images/heart_rate.png",
-                            multiple: 2,
-                            callback: () {
-                              print("clicked heartrate");
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const Heartratepg()));
-                            }),
-                        Stack(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Menu(
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.height * 0.15,
-                              imageName: "assets/images/fall.png",
-                              multiple: 3,
-                              callback: () => fallDialog(context),
-                            ),
-                            Positioned(
-                              bottom: MediaQuery.of(context).size.height * 0.04,
-                              left: MediaQuery.of(context).size.width * 0.06,
-                              child: InkResponse(
-                                onTap: () => fallDialog(context),
-                                child: Text(
-                                  '  Fall\nDetected',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                            const FaIcon(FontAwesomeIcons.circleExclamation),
+                            Container(
+                              margin: const EdgeInsets.all(10),
+                              child: Text(
+                                "Your device is connected!",
+                                style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700)),
                               ),
                             )
                           ],
                         ),
+                        Menu(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          imageName: "assets/images/Profile.png",
+                          multiple: 1,
+                          callback: () async {
+                            print("clicked profile");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => EditProfile(
+                                  userDocument: userDocument,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        Menu(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          imageName: "assets/images/location.png",
+                          multiple: 1,
+                          callback: () {
+                            print("clicked location");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => MapsPage(
+                                  userDocument: userDocument,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Menu(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.height * 0.15,
+                              imageName: "assets/images/SPO2.png",
+                              multiple: 2,
+                              callback: () {
+                                print("Clicked spo2");
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            spo2pg(
+                                              userDocument: userDocument,
+                                            )));
+                              },
+                            ),
+                            Menu(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.height * 0.15,
+                              imageName: "assets/images/SOS.png",
+                              multiple: 3,
+                              callback: () {
+                                print("clicked s0s");
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Menu(
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.15,
+                                imageName: "assets/images/heart_rate.png",
+                                multiple: 2,
+                                callback: () {
+                                  print("clicked heartrate");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          Heartratepg(
+                                        userDocument: userDocument,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                            Stack(
+                              children: [
+                                Menu(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.15,
+                                  imageName: "assets/images/fall.png",
+                                  multiple: 3,
+                                  callback: () =>
+                                      fallDialog(context, userDocument),
+                                ),
+                                Positioned(
+                                  bottom:
+                                      MediaQuery.of(context).size.height * 0.04,
+                                  left:
+                                      MediaQuery.of(context).size.width * 0.06,
+                                  child: InkResponse(
+                                    onTap: () =>
+                                        fallDialog(context, userDocument),
+                                    child: Text(
+                                      '  Fall\nDetected',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              top: 83,
-              right: 20,
-              child: Material(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.transparent,
-                child: InkResponse(
-                  onTap: () {
-                    _signOut();
-                  },
-                  child: const FaIcon(FontAwesomeIcons.rightFromBracket),
+                Positioned(
+                  top: 83,
+                  right: 20,
+                  child: Material(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.transparent,
+                    child: InkResponse(
+                      onTap: () {
+                        _signOut();
+                      },
+                      child: const FaIcon(FontAwesomeIcons.rightFromBracket),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Future<String?> fallDialog(BuildContext context) {
+  Future<String?> fallDialog(BuildContext context, dynamic userDocument) {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -253,7 +300,9 @@ class _HomepgState extends State<Homepg> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => const MapsPage(),
+                  builder: (BuildContext context) => MapsPage(
+                    userDocument: userDocument,
+                  ),
                 ),
               );
             },

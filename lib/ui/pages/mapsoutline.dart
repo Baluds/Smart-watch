@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/ui/pages/maps.dart';
 
 class MapsPage extends StatelessWidget {
-  const MapsPage({Key? key}) : super(key: key);
-
+  const MapsPage({Key? key, required this.userDocument}) : super(key: key);
+  final userDocument;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +50,7 @@ class MapsPage extends StatelessWidget {
                                   color: Colors.grey)),
                         ),
                         Text(
-                          "Balachandra",
+                          userDocument['Name'],
                           style: GoogleFonts.nunito(
                               textStyle: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.w700)),

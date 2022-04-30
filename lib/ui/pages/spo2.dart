@@ -7,8 +7,8 @@ import 'package:smart_watch/ui/pages/profile.dart';
 import '../../widgets/menu.dart';
 
 class spo2pg extends StatelessWidget {
-  const spo2pg({Key? key}) : super(key: key);
-
+  const spo2pg({Key? key, required this.userDocument}) : super(key: key);
+  final userDocument;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +54,7 @@ class spo2pg extends StatelessWidget {
                                     color: Colors.grey)),
                           ),
                           Text(
-                            "Balachandra",
+                            userDocument['Name'],
                             style: GoogleFonts.nunito(
                                 textStyle: const TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.w700)),
