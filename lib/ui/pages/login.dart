@@ -99,9 +99,13 @@ class _LoginscreenState extends State<Loginscreen> {
         ),
       ),
       validator: (inputValue) {
-        if (inputValue!.isEmpty || !_emailRegex.hasMatch(inputValue)) {
+        if (inputValue!.isEmpty) {
+          return "Email field can't be empty!";
+        }
+        if (!_emailRegex.hasMatch(inputValue)) {
           return "Please enter proper email";
         }
+
         return null;
       },
     );

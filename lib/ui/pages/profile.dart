@@ -1,5 +1,7 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_watch/services/service.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 
@@ -12,7 +14,14 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
-
+  bool isValidForm = false;
+  String _error = '';
+  final auth = Auth();
+  bool isLoading = false;
+  String user_id = '';
+  final RegExp _emailRegex = RegExp(
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+  final RegExp _phoneRegex = RegExp(r'^[0-9]{10}$');
   //editing controller
   final TextEditingController namecontroller = TextEditingController();
   final TextEditingController emailcontroller = TextEditingController();
@@ -20,118 +29,226 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController addresscontroller = TextEditingController();
   final TextEditingController emergencycontroller1 = TextEditingController();
   final TextEditingController emergencycontroller2 = TextEditingController();
+  validateSignUp() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isValidForm = true;
+      });
+    } else {
+      setState(() {
+        isValidForm = false;
+      });
+    }
+    if (!isValidForm) {
+      print('invalid');
+    } else {
+      // try {
+      //   setState(() {
+      //     isLoading = true;
+      //     _error = '';
+      //   });
+      //   // your update funcion firebase
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      // } on FirebaseAuthException catch (e) {
+      //   print(e);
+      //   print(e.code);
+      //   setState(() {
+      //     isLoading = false;
+      //     if (e.code == 'network-request-failed') {
+      //       _error = 'Please connect to internet and try again';
+      //     } else
+      //       _error = e.message.toString();
+      //   });
+      // }
+      // if (user_id == '') {
+      // } else {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          backgroundColor: const Color(0xFFFFDCA2),
+          insetPadding: const EdgeInsets.only(bottom: 520),
+          actionsAlignment: MainAxisAlignment.center,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            side: const BorderSide(
+              color: Color(0xFFFFDCA2),
+            ),
+          ),
+          titlePadding: const EdgeInsets.only(top: 15),
+          title: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: Text(
+              "Account details has been updated successfully!",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.nunito(
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w700)),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Ok',
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color.fromARGB(255, 100, 95, 51),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+      //}
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     //name
-    final name = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: namecontroller,
-          keyboardType: TextInputType.emailAddress,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Name",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        ));
+    final name = TextFormField(
+      autofocus: false,
+      controller: namecontroller,
+      keyboardType: TextInputType.emailAddress,
+      onSaved: (value) {
+        namecontroller.text = value!;
+      },
+      validator: (inputValue) {
+        if (inputValue!.isEmpty) {
+          return "Name field can't be empty";
+        }
+        return null;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white,
+        hintText: "Name",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
 
     //emailfield
-    final emailField = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: emailcontroller,
-          keyboardType: TextInputType.emailAddress,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Email Address",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    final emailField = TextFormField(
+        autofocus: false,
+        controller: emailcontroller,
+        keyboardType: TextInputType.emailAddress,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Email field can't be empty!";
+          }
+          if (!_emailRegex.hasMatch(inputValue)) {
+            return "Please enter proper email";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Email Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
         ));
-    final phoneField = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: phonecontroller,
-          keyboardType: TextInputType.phone,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Phone Number",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    final phoneField = TextFormField(
+        autofocus: false,
+        controller: phonecontroller,
+        keyboardType: TextInputType.phone,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Phone field can't be empty!";
+          }
+          if (!_phoneRegex.hasMatch(inputValue)) {
+            return "Please enter proper number";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Phone Number",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
         ));
-    final addressField = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: addresscontroller,
-          keyboardType: TextInputType.streetAddress,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Address",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    final emergencyfield1 = TextFormField(
+        autofocus: false,
+        controller: emergencycontroller1,
+        keyboardType: TextInputType.phone,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Phone field can't be empty!";
+          }
+          if (!_phoneRegex.hasMatch(inputValue)) {
+            return "Please enter proper number";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency Contact 1",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
         ));
-    final emergencyfield1 = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: emergencycontroller1,
-          keyboardType: TextInputType.phone,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Emergency Contact 1",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        ));
-    final emergencyfield2 = Container(
-        height: 50,
-        width: 312,
-        color: Colors.white,
-        child: TextFormField(
-          autofocus: false,
-          controller: emergencycontroller2,
-          keyboardType: TextInputType.phone,
-          //validator: () {},
-          onSaved: (value) {
-            emailcontroller.text = value!;
-          },
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            hintText: "Emergency Contact 2",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    final emergencyfield2 = TextFormField(
+        autofocus: false,
+        controller: emergencycontroller2,
+        keyboardType: TextInputType.phone,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Phone field can't be empty!";
+          }
+          if (!_phoneRegex.hasMatch(inputValue)) {
+            return "Please enter proper number";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency Contact 2",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
         ));
 
@@ -147,7 +264,7 @@ class _EditProfileState extends State<EditProfile> {
           borderRadius: BorderRadius.circular(12), // <-- Radius
         ),
       ),
-      onPressed: () {},
+      onPressed: () async => validateSignUp(),
       child: const Text(
         'Submit',
       ),
@@ -161,57 +278,63 @@ class _EditProfileState extends State<EditProfile> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Padding(
-                        padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
-                        child: Text(
-                          'A little more about you,\n          Balachandra',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+          child: isLoading
+              ? const CircularProgressIndicator(
+                  color: Color(0xffFFC76C),
+                )
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                              child: Text(
+                                'A little more about you,\n          Balachandra',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )),
+                          Padding(
+                              padding: const EdgeInsets.all(15),
+                              child:
+                                  Image.asset('assets/images/profile_pic.png')),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: name,
                           ),
-                        )),
-                    Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset('assets/images/profile_pic.png')),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: name,
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emailField,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: phoneField,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emergencyfield1,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: 10,
+                              left: 10,
+                              right: 10,
+                              bottom: 15,
+                            ),
+                            child: emergencyfield2,
+                          ),
+                          loginbutton,
+                        ],
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: emailField,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: phoneField,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: addressField,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: emergencyfield1,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: emergencyfield2,
-                    ),
-                    loginbutton,
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );

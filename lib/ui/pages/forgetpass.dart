@@ -121,7 +121,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.nunito(
                         textStyle: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w700)),
+                            fontSize: 18, fontWeight: FontWeight.w700)),
                   ),
                 ),
                 actions: <Widget>[

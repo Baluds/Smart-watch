@@ -97,7 +97,7 @@ class _SignupscreenState extends State<Signupscreen> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.nunito(
                     textStyle: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w700)),
+                        fontSize: 18, fontWeight: FontWeight.w700)),
               ),
             ),
             actions: <Widget>[
@@ -168,9 +168,13 @@ class _SignupscreenState extends State<Signupscreen> {
       controller: emailcontroller,
       keyboardType: TextInputType.emailAddress,
       validator: (inputValue) {
-        if (inputValue!.isEmpty || !_emailRegex.hasMatch(inputValue)) {
+        if (inputValue!.isEmpty) {
+          return "Email field can't be empty!";
+        }
+        if (!_emailRegex.hasMatch(inputValue)) {
           return "Please enter proper email";
         }
+
         return null;
       },
       onSaved: (value) {
