@@ -1,8 +1,10 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/forgetpass.dart';
 import 'package:smart_watch/ui/pages/home.dart';
 import 'package:smart_watch/ui/pages/signup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({Key? key}) : super(key: key);
@@ -13,16 +15,66 @@ class Loginscreen extends StatefulWidget {
 
 class _LoginscreenState extends State<Loginscreen> {
   //form key
+  final auth = Auth();
+  var user_id;
   final _formKey = GlobalKey<FormState>();
   final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
-  final String _error = '';
+  String _error = '';
   bool isValidForm = false;
+  bool isLoading = false;
 
   //editing controller
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
+
+  validateSignIn() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isValidForm = true;
+      });
+    } else {
+      setState(() {
+        isValidForm = false;
+      });
+    }
+    if (!isValidForm) {
+      print('invalid');
+    } else {
+      try {
+        setState(() {
+          isLoading = true;
+          _error = '';
+        });
+        user_id =
+            await auth.signIn(emailcontroller.text, passwordcontroller.text);
+        setState(() {
+          isLoading = false;
+        });
+      } on FirebaseAuthException catch (e) {
+        print(e);
+        setState(() {
+          isLoading = false;
+          if (e.code == 'user-not-found') {
+            _error = 'The email entered is unregistered';
+          } else if (e.code == 'network-request-failed') {
+            _error = 'Please connect to internet and try again';
+          } else
+            _error = e.message.toString();
+        });
+      }
+      if (user_id != null) {
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const Homepg(),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,32 +141,7 @@ class _LoginscreenState extends State<Loginscreen> {
           borderRadius: BorderRadius.circular(12), // <-- Radius
         ),
       ),
-      onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          setState(() {
-            isValidForm = true;
-          });
-        } else {
-          setState(() {
-            isValidForm = false;
-          });
-        }
-        !isValidForm
-            ? print('invalid')
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const Homepg()));
-        // try {
-        //   await FirebaseAuth.instance.signInWithEmailAndPassword(
-        //       email: emailcontroller.text, password: passwordcontroller.text);
-        // } on FirebaseAuthException catch (e) {
-        //   print('Failed with error code: ${e.code}');
-        //   setState(() {
-        //     _error = e.message.toString();
-        //   });
-        // }
-      },
+      onPressed: () async => validateSignIn(),
       child: const Text(
         'Login now',
       ),
@@ -122,89 +149,99 @@ class _LoginscreenState extends State<Loginscreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF4F4F9),
       body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        child: Image.asset('assets/images/logo.png'),
-                        margin: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                      )),
-                  const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text(
-                        'Login to your account',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: emailField,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: passwordField,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      _error,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
+        child: isLoading
+            ? const CircularProgressIndicator(
+                color: Color(0xffFFC76C),
+              )
+            : SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Align(
-                            alignment: Alignment.centerRight,
+                        Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Container(
+                              child: Image.asset('assets/images/logo.png'),
+                              margin: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            )),
+                        const Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Text(
+                              'Login to your account',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: emailField,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: passwordField,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            _error,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Column(
+                            children: [
+                              Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      print('Forgot Password!');
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  const ForgetPassword()));
+                                    },
+                                    child: const Text(
+                                      'Forget Password?',
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        loginbutton,
+                        Padding(
+                            padding: const EdgeInsets.all(15),
                             child: GestureDetector(
                               onTap: () {
-                                print('Forgot Password!');
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            const ForgetPassword()));
+                                            const Signupscreen()));
                               },
                               child: const Text(
-                                'Forget Password?',
-                                textAlign: TextAlign.end,
+                                'Don\'t have a account?',
                               ),
                             )),
                       ],
                     ),
                   ),
-                  loginbutton,
-                  Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: GestureDetector(
-                        onTap: () {
-                          print('Don\'t have a account?');
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const Signupscreen()));
-                        },
-                        child: const Text(
-                          'Don\'t have a account?',
-                        ),
-                      )),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailcontroller.dispose();
+    passwordcontroller.dispose();
+    super.dispose();
   }
 }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:smart_watch/ui/pages/forgetpass.dart';
-import 'package:smart_watch/ui/pages/home.dart';
-import 'package:smart_watch/ui/pages/login.dart';
-import 'package:smart_watch/ui/pages/profile.dart';
-import 'package:smart_watch/ui/pages/signup.dart';
-import 'package:smart_watch/ui/pages/heartrate.dart';
-import 'package:smart_watch/ui/pages/spo2.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:smart_watch/ui/pages/welcome.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

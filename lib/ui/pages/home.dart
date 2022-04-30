@@ -1,31 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/heartrate.dart';
 import 'package:smart_watch/ui/pages/mapsoutline.dart';
 import 'package:smart_watch/ui/pages/profile.dart';
 import 'package:smart_watch/ui/pages/spo2.dart';
+import 'package:smart_watch/ui/pages/welcome.dart';
 
 import '../../widgets/menu.dart';
 
-class Homepg extends StatelessWidget {
+class Homepg extends StatefulWidget {
   const Homepg({Key? key}) : super(key: key);
+  @override
+  State<Homepg> createState() => _HomepgState();
+}
+
+class _HomepgState extends State<Homepg> {
+  final auth = Auth();
+  _signOut() async {
+    try {
+      await auth.signOut();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const WelcomePage(),
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF191847),
       body: SafeArea(
-          child: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-              image: AssetImage("assets/images/home_bg.png"),
-              fit: BoxFit.cover,
-            )),
-          ),
-          Positioned(
+        child: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage("assets/images/home_bg.png"),
+                fit: BoxFit.cover,
+              )),
+            ),
+            Positioned(
               right: 0,
               top: MediaQuery.of(context).size.height * 0.06,
               child: Container(
@@ -180,9 +200,25 @@ class Homepg extends StatelessWidget {
                     ),
                   ],
                 ),
-              ))
-        ],
-      )),
+              ),
+            ),
+            Positioned(
+              top: 83,
+              right: 20,
+              child: Material(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.transparent,
+                child: InkResponse(
+                  onTap: () {
+                    _signOut();
+                  },
+                  child: const FaIcon(FontAwesomeIcons.rightFromBracket),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -196,7 +232,7 @@ class Homepg extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
           side: const BorderSide(
-            color: Color(0xFFFFDCA2),
+            color: Color(0xFFC1DEE2),
           ),
         ),
         titlePadding: const EdgeInsets.only(top: 15),

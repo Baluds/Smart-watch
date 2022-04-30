@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_watch/services/service.dart';
+import 'package:smart_watch/ui/pages/home.dart';
 import 'package:smart_watch/ui/pages/login.dart';
 import 'package:smart_watch/ui/pages/signup.dart';
 import 'package:smart_watch/widgets/painter.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
+
+  @override
+  State<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  final auth = Auth();
+  @override
+  void initState() {
+    super.initState();
+    auth.getCurrentUser().then((user) {
+      setState(() {
+        if (user != null) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const Homepg(),
+            ),
+          );
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
