@@ -18,7 +18,7 @@ class _EditProfileState extends State<EditProfile> {
   String _error = '';
   final auth = Auth();
   bool isLoading = false;
-  String user_id = '';
+  String userId = '';
   late TextEditingController namecontroller;
   late TextEditingController emailcontroller;
   late TextEditingController phonecontroller;
@@ -50,7 +50,6 @@ class _EditProfileState extends State<EditProfile> {
       });
     }
     if (!isValidForm) {
-      print('invalid');
     } else {
       // try {
       //   setState(() {
@@ -72,7 +71,7 @@ class _EditProfileState extends State<EditProfile> {
       //       _error = e.message.toString();
       //   });
       // }
-      // if (user_id == '') {
+      // if (userId == '') {
       // } else {
       showDialog<String>(
         context: context,
@@ -302,7 +301,7 @@ class _EditProfileState extends State<EditProfile> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
-                              padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
                               child: Text(
                                 'A little more about you,\n          ${widget.userDocument['Name']}',
                                 style: const TextStyle(

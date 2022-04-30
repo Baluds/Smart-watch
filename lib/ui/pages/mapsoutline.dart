@@ -96,7 +96,6 @@ class MapsPage extends StatelessWidget {
                           child: IconButton(
                             icon: const FaIcon(FontAwesomeIcons.circleXmark),
                             onPressed: () {
-                              print("close");
                               Navigator.pop(context);
                             },
                           ),

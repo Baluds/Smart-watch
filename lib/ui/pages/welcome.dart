@@ -24,7 +24,7 @@ class _WelcomePageState extends State<WelcomePage> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => Homepg(
-                user_id: user.uid,
+                userId: user.uid,
               ),
             ),
           );

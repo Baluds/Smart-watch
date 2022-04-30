@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smart_watch/ui/pages/mapsoutline.dart';
-import 'package:smart_watch/ui/pages/profile.dart';
-
-import '../../widgets/menu.dart';
 
 class Heartratepg extends StatelessWidget {
   const Heartratepg({Key? key, required this.userDocument}) : super(key: key);
@@ -87,7 +83,6 @@ class Heartratepg extends StatelessWidget {
                             child: IconButton(
                               icon: const FaIcon(FontAwesomeIcons.circleXmark),
                               onPressed: () {
-                                print("close");
                                 Navigator.pop(context);
                               },
                             ),

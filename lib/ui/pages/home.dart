@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,8 +11,8 @@ import 'package:smart_watch/ui/pages/welcome.dart';
 import '../../widgets/menu.dart';
 
 class Homepg extends StatefulWidget {
-  const Homepg({Key? key, required this.user_id}) : super(key: key);
-  final String user_id;
+  const Homepg({Key? key, required this.userId}) : super(key: key);
+  final String userId;
   @override
   State<Homepg> createState() => _HomepgState();
 }
@@ -36,7 +35,7 @@ class _HomepgState extends State<Homepg> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: auth.users.doc(widget.user_id).snapshots(),
+      stream: auth.users.doc(widget.userId).snapshots(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           return const Scaffold(
@@ -131,7 +130,6 @@ class _HomepgState extends State<Homepg> {
                           imageName: "assets/images/Profile.png",
                           multiple: 1,
                           callback: () async {
-                            print("clicked profile");
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -148,7 +146,6 @@ class _HomepgState extends State<Homepg> {
                           imageName: "assets/images/location.png",
                           multiple: 1,
                           callback: () {
-                            print("clicked location");
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -168,12 +165,11 @@ class _HomepgState extends State<Homepg> {
                               imageName: "assets/images/SPO2.png",
                               multiple: 2,
                               callback: () {
-                                print("Clicked spo2");
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            spo2pg(
+                                            Spo2pg(
                                               userDocument: userDocument,
                                             )));
                               },
@@ -183,9 +179,7 @@ class _HomepgState extends State<Homepg> {
                               height: MediaQuery.of(context).size.height * 0.15,
                               imageName: "assets/images/SOS.png",
                               multiple: 3,
-                              callback: () {
-                                print("clicked s0s");
-                              },
+                              callback: () {},
                             ),
                           ],
                         ),
@@ -199,7 +193,6 @@ class _HomepgState extends State<Homepg> {
                                 imageName: "assets/images/heart_rate.png",
                                 multiple: 2,
                                 callback: () {
-                                  print("clicked heartrate");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

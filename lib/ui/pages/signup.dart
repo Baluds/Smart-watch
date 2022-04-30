@@ -1,14 +1,8 @@
-import 'dart:ffi';
-import 'dart:ui';
-
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/login.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
 
 class Signupscreen extends StatefulWidget {
   const Signupscreen({Key? key}) : super(key: key);
@@ -33,13 +27,13 @@ class _SignupscreenState extends State<Signupscreen> {
 
   //final _auth = FirebaseAuth.instance;
   String _error = '';
-  String user_id = '';
+  String userId = '';
   bool isValidForm = false;
   bool isLoading = false;
   //editing controller
-  final TextEditingController namecontroller = new TextEditingController();
-  final TextEditingController emailcontroller = new TextEditingController();
-  final TextEditingController passwordcontroller = new TextEditingController();
+  final TextEditingController namecontroller = TextEditingController();
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
 
   validateSignUp() async {
     if (_formKey.currentState!.validate()) {
@@ -52,30 +46,28 @@ class _SignupscreenState extends State<Signupscreen> {
       });
     }
     if (!isValidForm) {
-      print('invalid');
     } else {
       try {
         setState(() {
           isLoading = true;
           _error = '';
         });
-        user_id = await auth.signUp(
+        userId = await auth.signUp(
             emailcontroller.text, passwordcontroller.text, namecontroller.text);
         setState(() {
           isLoading = false;
         });
       } on FirebaseAuthException catch (e) {
-        print(e);
-        print(e.code);
         setState(() {
           isLoading = false;
           if (e.code == 'network-request-failed') {
             _error = 'Please connect to internet and try again';
-          } else
+          } else {
             _error = e.message.toString();
+          }
         });
       }
-      if (user_id == '') {
+      if (userId == '') {
       } else {
         showDialog<String>(
           context: context,
@@ -285,7 +277,7 @@ class _SignupscreenState extends State<Signupscreen> {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Text(
-                            '$_error',
+                            _error,
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),

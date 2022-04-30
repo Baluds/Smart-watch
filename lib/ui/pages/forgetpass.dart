@@ -1,10 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smart_watch/services/service.dart';
-import 'package:smart_watch/ui/pages/login.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({Key? key}) : super(key: key);
@@ -22,7 +18,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailcontroller = new TextEditingController();
+    final TextEditingController emailcontroller = TextEditingController();
     final emailField = TextFormField(
       autofocus: false,
       controller: emailcontroller,
@@ -75,7 +71,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           });
         }
         if (!isValidForm) {
-          print('invalid');
         } else {
           try {
             setState(() {
@@ -88,16 +83,15 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               isLoading = false;
             });
           } on FirebaseAuthException catch (e) {
-            print(e.code);
-            print(e.message);
             setState(() {
               isLoading = false;
               if (e.code == 'user-not-found') {
                 _error = 'The email entered is unregistered';
               } else if (e.code == 'network-request-failed') {
                 _error = 'Please connect to internet and try again';
-              } else
+              } else {
                 _error = e.message.toString();
+              }
             });
           }
           if (_error == '') {
@@ -162,7 +156,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     );
 
     return Scaffold(
-      backgroundColor: Color(0xffF4F4F9),
+      backgroundColor: const Color(0xffF4F4F9),
       body: Center(
         child: isLoading
             ? const CircularProgressIndicator(
@@ -198,7 +192,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Text(
-                            '$_error',
+                            _error,
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),

@@ -67,9 +67,7 @@ class _MapsState extends State<Maps> {
             clipBehavior: Clip.hardEdge,
             child: IconButton(
               icon: const FaIcon(FontAwesomeIcons.locationCrosshairs),
-              onPressed: () {
-                print("current location");
-              },
+              onPressed: () {},
             ),
           ),
         ),

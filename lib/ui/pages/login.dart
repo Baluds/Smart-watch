@@ -16,7 +16,7 @@ class Loginscreen extends StatefulWidget {
 class _LoginscreenState extends State<Loginscreen> {
   //form key
   final auth = Auth();
-  var user_id;
+  var userId;
   final _formKey = GlobalKey<FormState>();
   final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
@@ -40,37 +40,36 @@ class _LoginscreenState extends State<Loginscreen> {
       });
     }
     if (!isValidForm) {
-      print('invalid');
     } else {
       try {
         setState(() {
           isLoading = true;
           _error = '';
         });
-        user_id =
+        userId =
             await auth.signIn(emailcontroller.text, passwordcontroller.text);
         setState(() {
           isLoading = false;
         });
       } on FirebaseAuthException catch (e) {
-        print(e);
         setState(() {
           isLoading = false;
           if (e.code == 'user-not-found') {
             _error = 'The email entered is unregistered';
           } else if (e.code == 'network-request-failed') {
             _error = 'Please connect to internet and try again';
-          } else
+          } else {
             _error = e.message.toString();
+          }
         });
       }
-      if (user_id != null) {
+      if (userId != null) {
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => Homepg(
-              user_id: user_id,
+              userId: userId,
             ),
           ),
         );
@@ -205,7 +204,6 @@ class _LoginscreenState extends State<Loginscreen> {
                                   alignment: Alignment.centerRight,
                                   child: GestureDetector(
                                     onTap: () {
-                                      print('Forgot Password!');
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(

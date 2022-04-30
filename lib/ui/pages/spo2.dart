@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smart_watch/ui/pages/mapsoutline.dart';
-import 'package:smart_watch/ui/pages/profile.dart';
 
-import '../../widgets/menu.dart';
-
-class spo2pg extends StatelessWidget {
-  const spo2pg({Key? key, required this.userDocument}) : super(key: key);
+class Spo2pg extends StatelessWidget {
+  const Spo2pg({Key? key, required this.userDocument}) : super(key: key);
   final userDocument;
   @override
   Widget build(BuildContext context) {
@@ -87,7 +83,6 @@ class spo2pg extends StatelessWidget {
                             child: IconButton(
                               icon: const FaIcon(FontAwesomeIcons.circleXmark),
                               onPressed: () {
-                                print("close");
                                 Navigator.pop(context);
                               },
                             ),
