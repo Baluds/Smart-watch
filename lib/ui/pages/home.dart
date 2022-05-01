@@ -22,11 +22,6 @@ class _HomepgState extends State<Homepg> {
   _signOut() async {
     try {
       await auth.signOut();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const WelcomePage(),
-        ),
-      );
     } catch (e) {
       print(e);
     }

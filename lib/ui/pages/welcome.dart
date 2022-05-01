@@ -15,165 +15,161 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   final auth = Auth();
-  bool isLoading = false;
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      isLoading = true;
-    });
-    auth.getCurrentUser().then((user) {
-      setState(() {
-        isLoading = false;
-        if (user != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => Homepg(
-                userId: user.uid,
-              ),
-            ),
-          );
-        }
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF191847),
-      body: SafeArea(
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xffFFC76C),
+    return StreamBuilder(
+        stream: auth.firebaseAuth.authStateChanges(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              backgroundColor: Color(0xFF191847),
+              body: SafeArea(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xffFFC76C),
+                  ),
                 ),
-              )
-            : Stack(
-                children: [
-                  Positioned(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          alignment: Alignment.topCenter,
-                          scale: 0.7,
-                          image: AssetImage("assets/images/welcome.png"),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.45,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(
-                          color: Color(0xFFF4F4F9),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(52),
-                            topRight: Radius.circular(52),
-                          )),
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: CustomPaint(
-                      painter: BgPainter(),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.60,
-                    left: MediaQuery.of(context).size.width * 0.27,
-                    child: Text(
-                      "Hey, Welcome!",
-                      style: GoogleFonts.nunito(
-                        textStyle: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.70,
-                    left: MediaQuery.of(context).size.width * 0.15,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.06,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const Signupscreen()));
-                        },
-                        child: Text(
-                          "Get Started",
-                          style: GoogleFonts.nunito(
-                            textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color(0xffFFC76C)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.79,
-                    left: MediaQuery.of(context).size.width * 0.15,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.06,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const Loginscreen()));
-                        },
-                        child: Text(
-                          "I already have an account",
-                          style: GoogleFonts.nunito(
-                            textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color(0xffffffff)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
-      ),
-    );
+            );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return Scaffold(
+              backgroundColor: const Color(0xFF191847),
+              body: SafeArea(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            alignment: Alignment.topCenter,
+                            scale: 0.7,
+                            image: AssetImage("assets/images/welcome.png"),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.45,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: const BoxDecoration(
+                            color: Color(0xFFF4F4F9),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(52),
+                              topRight: Radius.circular(52),
+                            )),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: CustomPaint(
+                        painter: BgPainter(),
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.60,
+                      left: MediaQuery.of(context).size.width * 0.27,
+                      child: Text(
+                        "Hey, Welcome!",
+                        style: GoogleFonts.nunito(
+                          textStyle: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.70,
+                      left: MediaQuery.of(context).size.width * 0.15,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const Signupscreen()));
+                          },
+                          child: Text(
+                            "Get Started",
+                            style: GoogleFonts.nunito(
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                const Color(0xffFFC76C)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.79,
+                      left: MediaQuery.of(context).size.width * 0.15,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const Loginscreen()));
+                          },
+                          child: Text(
+                            "I already have an account",
+                            style: GoogleFonts.nunito(
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                                const Color(0xffffffff)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              backgroundColor: const Color(0xFF191847),
+              body: SafeArea(
+                child: Center(child: Text('${snapshot.error}')),
+              ),
+            );
+          }
+          return Homepg(userId: snapshot.data.uid);
+        });
   }
 }

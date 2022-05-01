@@ -19,6 +19,7 @@ class Auth {
     final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: pass);
     await createUser(userCredential.user!, name);
+    await signOut(); //signup automatically signs in suer so to avoid that added this
     return userCredential.user?.uid;
   }
 

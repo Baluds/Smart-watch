@@ -65,14 +65,6 @@ class _LoginscreenState extends State<Loginscreen> {
       }
       if (userId != null) {
         Navigator.pop(context);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => Homepg(
-              userId: userId,
-            ),
-          ),
-        );
       }
     }
   }
