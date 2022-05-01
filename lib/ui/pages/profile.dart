@@ -1,4 +1,5 @@
 // import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
@@ -18,7 +19,6 @@ class _EditProfileState extends State<EditProfile> {
   String _error = '';
   final auth = Auth();
   bool isLoading = false;
-  String userId = '';
   late TextEditingController namecontroller;
   late TextEditingController emailcontroller;
   late TextEditingController phonecontroller;
@@ -34,9 +34,11 @@ class _EditProfileState extends State<EditProfile> {
     super.initState();
     namecontroller = TextEditingController(text: widget.userDocument['Name']);
     emailcontroller = TextEditingController(text: widget.userDocument['Email']);
-    phonecontroller = TextEditingController();
-    emergencycontroller1 = TextEditingController();
-    emergencycontroller2 = TextEditingController();
+    phonecontroller = TextEditingController(text: widget.userDocument['Phone']);
+    emergencycontroller1 =
+        TextEditingController(text: widget.userDocument['EmergencyContact1']);
+    emergencycontroller2 =
+        TextEditingController(text: widget.userDocument['EmergencyContact2']);
   }
 
   validateSignUp() async {
@@ -51,70 +53,76 @@ class _EditProfileState extends State<EditProfile> {
     }
     if (!isValidForm) {
     } else {
-      // try {
-      //   setState(() {
-      //     isLoading = true;
-      //     _error = '';
-      //   });
-      //   // your update funcion firebase
-      //   setState(() {
-      //     isLoading = false;
-      //   });
-      // } on FirebaseAuthException catch (e) {
-      //   print(e);
-      //   print(e.code);
-      //   setState(() {
-      //     isLoading = false;
-      //     if (e.code == 'network-request-failed') {
-      //       _error = 'Please connect to internet and try again';
-      //     } else
-      //       _error = e.message.toString();
-      //   });
-      // }
-      // if (userId == '') {
-      // } else {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          backgroundColor: const Color(0xFFFFDCA2),
-          insetPadding: const EdgeInsets.only(bottom: 520),
-          actionsAlignment: MainAxisAlignment.center,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            side: const BorderSide(
-              color: Color(0xFFFFDCA2),
-            ),
-          ),
-          titlePadding: const EdgeInsets.only(top: 15),
-          title: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: Text(
-              "Account details has been updated successfully!",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.nunito(
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w700)),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: Text(
-                'Ok',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color.fromARGB(255, 100, 95, 51),
-                ),
+      try {
+        setState(() {
+          isLoading = true;
+          _error = '';
+        });
+        await auth.updateUser({
+          'Name': namecontroller.text,
+          'Uid': widget.userDocument['Uid'],
+          'Phone': phonecontroller.text,
+          'EmergencyContact1': emergencycontroller1.text,
+          'EmergencyContact2': emergencycontroller2.text,
+        });
+        setState(() {
+          isLoading = false;
+        });
+      } on FirebaseException catch (e) {
+        print(e);
+        print(e.code);
+        setState(() {
+          isLoading = false;
+          if (e.code == 'network-request-failed') {
+            _error = 'Please connect to internet and try again';
+          } else {
+            _error = e.message.toString();
+          }
+        });
+      }
+      if (_error == '') {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            backgroundColor: const Color(0xFFFFDCA2),
+            insetPadding: const EdgeInsets.only(bottom: 520),
+            actionsAlignment: MainAxisAlignment.center,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              side: const BorderSide(
+                color: Color(0xFFFFDCA2),
               ),
             ),
-          ],
-        ),
-      );
-      //}
+            titlePadding: const EdgeInsets.only(top: 15),
+            title: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: Text(
+                "Account details has been updated successfully!",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                    textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700)),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Ok',
+                  style: GoogleFonts.nunito(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color.fromARGB(255, 100, 95, 51),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -150,6 +158,7 @@ class _EditProfileState extends State<EditProfile> {
     //emailfield
     final emailField = TextFormField(
         autofocus: false,
+        readOnly: true,
         controller: emailcontroller,
         keyboardType: TextInputType.emailAddress,
         validator: (inputValue) {
@@ -169,7 +178,7 @@ class _EditProfileState extends State<EditProfile> {
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(8),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: const Color.fromARGB(255, 229, 229, 229),
           hintText: "Email Address",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

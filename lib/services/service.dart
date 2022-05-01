@@ -28,6 +28,7 @@ class Auth {
         .set({
           'Name': name,
           'Email': user.email,
+          'Uid': user.uid,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
@@ -36,5 +37,14 @@ class Auth {
   Future getCurrentUser() async {
     final user = firebaseAuth.currentUser;
     return user;
+  }
+
+  Future updateUser(Map profile) {
+    return users.doc(profile['Uid']).update({
+      'Name': profile['Name'],
+      'Phone': profile['Phone'],
+      'EmergencyContact1': profile['EmergencyContact1'],
+      'EmergencyContact2': profile['EmergencyContact2'],
+    });
   }
 }
