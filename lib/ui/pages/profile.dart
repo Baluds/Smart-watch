@@ -310,13 +310,24 @@ class _EditProfileState extends State<EditProfile> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                              child: Text(
-                                'A little more about you,\n          ${widget.userDocument['Name']}',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                              padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'A little more about you,',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.userDocument['Name'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               )),
                           Padding(
                               padding: const EdgeInsets.all(15),
