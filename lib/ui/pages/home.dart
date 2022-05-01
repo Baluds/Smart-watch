@@ -50,9 +50,12 @@ class _HomepgState extends State<Homepg> {
           return const Scaffold(
             backgroundColor: Color(0xFF191847),
             body: SafeArea(
+              child: Center(
                 child: CircularProgressIndicator(
-              color: Color(0xffFFC76C),
-            )),
+                  color: Color(0xffFFC76C),
+                ),
+              ),
+            ),
           );
         }
         var userDocument = snapshot.data;

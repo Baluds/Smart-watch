@@ -29,6 +29,9 @@ class Auth {
           'Name': name,
           'Email': user.email,
           'Uid': user.uid,
+          'Phone': '',
+          'EmergencyContact1': '',
+          'EmergencyContact2': '',
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
