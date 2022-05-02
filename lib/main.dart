@@ -19,9 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const WelcomePage(),
-      // routes: {
-      // },
+      home: const Devicespg(),
     );
   }
 }
