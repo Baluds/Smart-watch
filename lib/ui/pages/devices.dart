@@ -4,6 +4,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 
 class Devicespg extends StatefulWidget {
   const Devicespg({Key? key}) : super(key: key);
@@ -31,11 +32,25 @@ class _DevicespgState extends State<Devicespg> {
   BluetoothDevice? _device;
   bool _connected = false;
   bool _isButtonUnavailable = false;
+  String _messageBuffer = '';
+  List<String> messages = [];
+  String messageData = '';
+
+  final androidConfig = const FlutterBackgroundAndroidConfig(
+    notificationTitle: "flutter_background example app",
+    notificationText:
+        "Background notification for keeping the example app running in the background",
+    notificationImportance: AndroidNotificationImportance.Default,
+    notificationIcon: AndroidResource(
+        name: 'background_icon',
+        defType: 'drawable'), // Default is ic_launcher from folder mipmap
+  );
 
   @override
   void initState() {
     super.initState();
     // Get current state
+
     FlutterBluetoothSerial.instance.state.then((state) {
       setState(() {
         _bluetoothState = state;
@@ -70,6 +85,9 @@ class _DevicespgState extends State<Devicespg> {
   }
 
   Future enableBluetooth() async {
+    bool success =
+        await FlutterBackground.initialize(androidConfig: androidConfig);
+    bool trr = await FlutterBackground.enableBackgroundExecution();
     _bluetoothState = await FlutterBluetoothSerial.instance.state;
     if (_bluetoothState == BluetoothState.STATE_OFF) {
       await FlutterBluetoothSerial.instance.requestEnable();
@@ -295,6 +313,20 @@ class _DevicespgState extends State<Devicespg> {
                         FlutterBluetoothSerial.instance.openSettings();
                       },
                     ),
+                    Row(
+                      children: [
+                        const Text("Value sent by device: "),
+                        Text(messageData),
+                      ],
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (FlutterBackground.isBackgroundExecutionEnabled) {
+                          await FlutterBackground.disableBackgroundExecution();
+                        }
+                      },
+                      child: const Text('Press for disable'),
+                    ),
                   ],
                 ),
               ),
@@ -340,7 +372,12 @@ class _DevicespgState extends State<Devicespg> {
             _connected = true;
           });
 
-          connection?.input?.listen(null).onDone(() {
+          connection?.input?.listen(_onDataReceived).onDone(() {
+            print(_messageBuffer);
+            // print(messages);
+            setState(() {
+              messageData = _messageBuffer;
+            });
             if (isDisconnecting) {
               print('Disconnecting locally!');
             } else {
@@ -361,31 +398,17 @@ class _DevicespgState extends State<Devicespg> {
     }
   }
 
-  // void _onDataReceived(Uint8List data) {
-  //   // Allocate buffer for parsed data
-  //   int backspacesCounter = 0;
-  //   data.forEach((byte) {
-  //     if (byte == 8 || byte == 127) {
-  //       backspacesCounter++;
-  //     }
-  //   });
-  //   Uint8List buffer = Uint8List(data.length - backspacesCounter);
-  //   int bufferIndex = buffer.length;
-
-  //   // Apply backspace control character
-  //   backspacesCounter = 0;
-  //   for (int i = data.length - 1; i >= 0; i--) {
-  //     if (data[i] == 8 || data[i] == 127) {
-  //       backspacesCounter++;
-  //     } else {
-  //       if (backspacesCounter > 0) {
-  //         backspacesCounter--;
-  //       } else {
-  //         buffer[--bufferIndex] = data[i];
-  //       }
-  //     }
-  //   }
-  // }
+  void _onDataReceived(Uint8List data) {
+    if (String.fromCharCodes(data) == '\n') {
+      print(_messageBuffer);
+      setState(() {
+        messageData = _messageBuffer;
+        _messageBuffer = '';
+      });
+    } else {
+      _messageBuffer = _messageBuffer + String.fromCharCodes(data);
+    }
+  }
 
   // Method to disconnect bluetooth
   void _disconnect() async {

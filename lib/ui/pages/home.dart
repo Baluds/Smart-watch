@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
+import 'package:smart_watch/ui/pages/devices.dart';
 import 'package:smart_watch/ui/pages/heartrate.dart';
 import 'package:smart_watch/ui/pages/mapsoutline.dart';
 import 'package:smart_watch/ui/pages/profile.dart';
@@ -112,12 +113,27 @@ class _HomepgState extends State<Homepg> {
                             const FaIcon(FontAwesomeIcons.circleExclamation),
                             Container(
                               margin: const EdgeInsets.all(10),
-                              child: Text(
-                                "Your device is connected!",
-                                style: GoogleFonts.nunito(
-                                    textStyle: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700)),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkResponse(
+                                  highlightColor: const Color(0xffFFC76C),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const Devicespg(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Your device is connected!",
+                                    style: GoogleFonts.nunito(
+                                        textStyle: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700)),
+                                  ),
+                                ),
                               ),
                             )
                           ],
