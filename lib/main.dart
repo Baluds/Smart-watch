@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:smart_watch/ui/pages/devices.dart';
-import 'package:smart_watch/ui/pages/home.dart';
 import 'package:smart_watch/ui/pages/welcome.dart';
 
 void main() async {

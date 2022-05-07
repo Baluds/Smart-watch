@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
-
-// import 'package:location/location.dart';
+import 'package:location/location.dart';
+import 'package:geocode/geocode.dart';
 
 class Maps extends StatefulWidget {
   const Maps({Key? key}) : super(key: key);
@@ -13,36 +12,77 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> {
-  final Completer<GoogleMapController> _controller = Completer();
+  late LocationData _currentPosition;
+  GoogleMapController? _controller;
+  Location location = Location();
+  GeoCode geoCode = GeoCode();
+  late String _address = '';
+  LatLng _initialcameraposition = const LatLng(15.1583353, 76.8802553);
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(15.1583353, 76.8802553),
-    zoom: 14.4746,
-  );
-  // static final CameraPosition _kLake = CameraPosition(
-  //     bearing: 192.8334901395799,
-  //     target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
-  //     tilt: 59.440717697143555,
-  //     zoom: 19.151926040649414);
-  // Future<void> _goToTheLake() async {
-  //   final GoogleMapController controller = await _controller.future;
-  //   controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  // }
+  getLoc() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
 
-  // late LocationData currentLocation;
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
 
-  // _getLocation() async {
-  //   var location = Location();
-  //   currentLocation = await location.getLocation();
-  //   print("locationLatitude: ${currentLocation.latitude}");
-  //   print("locationLongitude: ${currentLocation.longitude}");
-  //   setState(() {});
-  // }
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _currentPosition = await location.getLocation();
+    _initialcameraposition =
+        LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      //print("${currentLocation.longitude} : ${currentLocation.longitude}");
+      setState(() {
+        _currentPosition = currentLocation;
+        _initialcameraposition =
+            LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
+        _getAddress(_currentPosition.latitude!, _currentPosition.longitude!)
+            .then((value) {
+          setState(() {
+            _address = value.streetAddress!;
+          });
+        });
+      });
+    });
+  }
+
+  Future<Address> _getAddress(double lat, double lang) async {
+    var add;
+    try {
+      add = await geoCode.reverseGeocoding(latitude: lat, longitude: lang);
+    } catch (e) {
+      print(e);
+    }
+    return add;
+  }
 
   @override
   void initState() {
-    //_getLocation();
     super.initState();
+    getLoc();
+  }
+
+  void _onMapCreated(GoogleMapController _cntlr) {
+    _controller = _controller;
+    location.onLocationChanged.listen((l) {
+      _controller?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 15),
+        ),
+      );
+    });
   }
 
   @override
@@ -51,24 +91,18 @@ class _MapsState extends State<Maps> {
       children: [
         GoogleMap(
           myLocationEnabled: true,
-          zoomControlsEnabled: false,
           mapType: MapType.normal,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
+          initialCameraPosition: CameraPosition(
+            target: _initialcameraposition,
+            zoom: 14.4746,
+          ),
+          onMapCreated: _onMapCreated,
         ),
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            clipBehavior: Clip.hardEdge,
-            child: IconButton(
-              icon: const FaIcon(FontAwesomeIcons.locationCrosshairs),
-              onPressed: () {},
-            ),
+        Text(
+          "Address: $_address",
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
           ),
         ),
       ],
