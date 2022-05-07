@@ -44,17 +44,19 @@ class _MapsState extends State<Maps> {
         LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
     location.onLocationChanged.listen((LocationData currentLocation) {
       //print("${currentLocation.longitude} : ${currentLocation.longitude}");
-      setState(() {
-        _currentPosition = currentLocation;
-        _initialcameraposition =
-            LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
-        _getAddress(_currentPosition.latitude!, _currentPosition.longitude!)
-            .then((value) {
-          setState(() {
-            _address = value.streetAddress!;
+      if (mounted) {
+        setState(() {
+          _currentPosition = currentLocation;
+          _initialcameraposition =
+              LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
+          _getAddress(_currentPosition.latitude!, _currentPosition.longitude!)
+              .then((value) {
+            setState(() {
+              _address = value.streetAddress!;
+            });
           });
         });
-      });
+      }
     });
   }
 

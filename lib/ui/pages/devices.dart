@@ -4,7 +4,6 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:flutter_background/flutter_background.dart';
 
 class Devicespg extends StatefulWidget {
   const Devicespg({Key? key}) : super(key: key);
@@ -36,16 +35,6 @@ class _DevicespgState extends State<Devicespg> {
   List<String> messages = [];
   String messageData = '';
 
-  final androidConfig = const FlutterBackgroundAndroidConfig(
-    notificationTitle: "flutter_background example app",
-    notificationText:
-        "Background notification for keeping the example app running in the background",
-    notificationImportance: AndroidNotificationImportance.Default,
-    notificationIcon: AndroidResource(
-        name: 'background_icon',
-        defType: 'drawable'), // Default is ic_launcher from folder mipmap
-  );
-
   @override
   void initState() {
     super.initState();
@@ -75,9 +64,6 @@ class _DevicespgState extends State<Devicespg> {
   }
 
   Future enableBluetooth() async {
-    bool success =
-        await FlutterBackground.initialize(androidConfig: androidConfig);
-    bool trr = await FlutterBackground.enableBackgroundExecution();
     _bluetoothState = await FlutterBluetoothSerial.instance.state;
     if (_bluetoothState == BluetoothState.STATE_OFF) {
       await FlutterBluetoothSerial.instance.requestEnable();
@@ -309,14 +295,14 @@ class _DevicespgState extends State<Devicespg> {
                         Text(messageData),
                       ],
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (FlutterBackground.isBackgroundExecutionEnabled) {
-                          await FlutterBackground.disableBackgroundExecution();
-                        }
-                      },
-                      child: const Text('Press for disable'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () async {
+                    //     if (FlutterBackground.isBackgroundExecutionEnabled) {
+                    //       await FlutterBackground.disableBackgroundExecution();
+                    //     }
+                    //   },
+                    //   child: const Text('Press for disable'),
+                    // ),
                   ],
                 ),
               ),

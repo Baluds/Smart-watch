@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background/flutter_background.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
 import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/home.dart';
 import 'package:smart_watch/ui/pages/login.dart';
@@ -14,7 +17,48 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    enablePermission();
+  }
+
+  void enablePermission() async {
+    await FlutterBackground.initialize(androidConfig: androidConfig);
+    await FlutterBackground.enableBackgroundExecution();
+    await FlutterBluetoothSerial.instance.requestEnable();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+  }
+
+  Location location = Location();
   final auth = Auth();
+  final androidConfig = const FlutterBackgroundAndroidConfig(
+    notificationTitle: "Smart Watch app",
+    notificationText:
+        "Background notification for keeping the Smart Watch app running in the background",
+    notificationImportance: AndroidNotificationImportance.Default,
+    notificationIcon: AndroidResource(
+      name: 'background_icon',
+      defType: 'drawable',
+    ), // Default is ic_launcher from folder mipmap
+  );
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
