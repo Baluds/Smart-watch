@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
+import 'package:smart_watch/test.dart';
 import 'package:smart_watch/ui/pages/devices.dart';
 import 'package:smart_watch/ui/pages/heartrate.dart';
 import 'package:smart_watch/ui/pages/mapsoutline.dart';
@@ -122,7 +123,9 @@ class _HomepgState extends State<Homepg> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            const Devicespg(),
+                                            Devicepg(
+                                          userDocument: userDocument,
+                                        ),
                                       ),
                                     );
                                   },
