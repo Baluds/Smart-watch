@@ -74,16 +74,6 @@ class _DevicespgState extends State<Devicespg> {
     });
   }
 
-  @override
-  void dispose() {
-    if (isConnected) {
-      isDisconnecting = true;
-      connection?.dispose();
-      // connection = null;
-    }
-    super.dispose();
-  }
-
   Future enableBluetooth() async {
     bool success =
         await FlutterBackground.initialize(androidConfig: androidConfig);
@@ -401,10 +391,12 @@ class _DevicespgState extends State<Devicespg> {
   void _onDataReceived(Uint8List data) {
     if (String.fromCharCodes(data) == '\n') {
       print(_messageBuffer);
-      setState(() {
-        messageData = _messageBuffer;
-        _messageBuffer = '';
-      });
+      if (mounted) {
+        setState(() {
+          messageData = _messageBuffer;
+        });
+      }
+      _messageBuffer = '';
     } else {
       _messageBuffer = _messageBuffer + String.fromCharCodes(data);
     }
