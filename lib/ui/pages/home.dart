@@ -3,12 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/test.dart';
-import 'package:smart_watch/ui/pages/devices.dart';
 import 'package:smart_watch/ui/pages/heartrate.dart';
 import 'package:smart_watch/ui/pages/mapsoutline.dart';
 import 'package:smart_watch/ui/pages/profile.dart';
 import 'package:smart_watch/ui/pages/spo2.dart';
-import 'package:smart_watch/ui/pages/welcome.dart';
 
 import '../../widgets/menu.dart';
 
@@ -29,6 +27,7 @@ class _HomepgState extends State<Homepg> {
     }
   }
 
+  var result = {};
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -118,19 +117,28 @@ class _HomepgState extends State<Homepg> {
                                 color: Colors.transparent,
                                 child: InkResponse(
                                   highlightColor: const Color(0xffFFC76C),
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
                                             Devicepg(
                                           userDocument: userDocument,
+                                          conn: result["connection"],
+                                          blueDevice: result["blueDevice"],
                                         ),
                                       ),
-                                    );
+                                    ).then((value) {
+                                      setState(() {
+                                        result = value;
+                                        print(result["connection"] == null);
+                                      });
+                                    });
                                   },
                                   child: Text(
-                                    "Your device is connected!",
+                                    (result["connection"] != null)
+                                        ? "${result["blueDevice"].name} is connected!"
+                                        : "Your device is not connected!",
                                     style: GoogleFonts.nunito(
                                         textStyle: const TextStyle(
                                             fontSize: 18,

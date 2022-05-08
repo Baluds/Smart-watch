@@ -7,10 +7,18 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Devicepg extends StatefulWidget {
-  Devicepg({Key? key, required this.userDocument}) : super(key: key);
+  const Devicepg(
+      {Key? key,
+      required this.userDocument,
+      required this.conn,
+      required this.blueDevice})
+      : super(key: key);
   final userDocument;
+  final conn;
+  final blueDevice;
   @override
   State<Devicepg> createState() => _DevicepgState();
 }
@@ -20,7 +28,6 @@ class _DevicepgState extends State<Devicepg> {
   final FlutterBluetoothSerial _bluetooth = FlutterBluetoothSerial.instance;
   BluetoothConnection? connection;
   late Uint8List uint8List;
-  late int _deviceState;
   List<BluetoothDevice> _devicesList = [];
   BluetoothDevice? _device;
   bool _connected = false;
@@ -35,12 +42,14 @@ class _DevicepgState extends State<Devicepg> {
   @override
   void initState() {
     super.initState();
+    connection = widget.conn;
+    _device = widget.blueDevice;
+    _connected = connection != null && _device != null ? true : false;
     FlutterBluetoothSerial.instance.state.then((state) {
       setState(() {
         _bluetoothState = state;
       });
     });
-    _deviceState = 0; // neutral
     enableBluetooth();
     FlutterBluetoothSerial.instance
         .onStateChanged()
@@ -140,8 +149,8 @@ class _DevicepgState extends State<Devicepg> {
                         margin: EdgeInsets.only(
                           top: MediaQuery.of(context).size.height * 0.05,
                         ),
-                        height: MediaQuery.of(context).size.height * 0.64,
-                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.655,
+                        width: MediaQuery.of(context).size.width * 0.71,
                         decoration: const BoxDecoration(
                           color: Color(0xFFFFDCA2),
                           borderRadius: BorderRadius.all(
@@ -172,7 +181,12 @@ class _DevicepgState extends State<Devicepg> {
                           child: IconButton(
                             icon: const FaIcon(FontAwesomeIcons.circleXmark),
                             onPressed: () {
-                              Navigator.pop(context);
+                              //print('hiiiiiiiiii');
+                              //print(_device?.name);
+                              Navigator.pop(context, {
+                                "connection": connection,
+                                "blueDevice": _device,
+                              });
                             },
                           ),
                         ),
@@ -300,11 +314,13 @@ class _DevicepgState extends State<Devicepg> {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(
-                                right: 26,
+                                right: 24,
                               ),
-                              width: MediaQuery.of(context).size.width * 0.25,
+                              padding: const EdgeInsets.all(0),
+                              width: MediaQuery.of(context).size.width * 0.26,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(0),
                                   textStyle: const TextStyle(fontSize: 15),
                                   primary: const Color(0xffFFC76C),
                                   onPrimary: Colors.black,
@@ -330,9 +346,15 @@ class _DevicepgState extends State<Devicepg> {
                               ),
                             ),
                             SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              child: ElevatedButton(
+                              width: MediaQuery.of(context).size.width * 0.26,
+                              child: ElevatedButton.icon(
+                                icon: const Icon(
+                                  Icons.refresh,
+                                  color: Colors.black,
+                                ),
                                 style: ElevatedButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(2, 0, 2, 0),
                                   textStyle: const TextStyle(fontSize: 15),
                                   primary: const Color(0xffFFC76C),
                                   onPrimary: Colors.black,
@@ -341,7 +363,7 @@ class _DevicepgState extends State<Devicepg> {
                                         BorderRadius.circular(12), // <-- Radius
                                   ),
                                 ),
-                                child: Text(
+                                label: Text(
                                   'Refresh',
                                   style: GoogleFonts.nunito(
                                     textStyle: const TextStyle(
@@ -367,25 +389,25 @@ class _DevicepgState extends State<Devicepg> {
             ),
           ),
           Positioned(
-            bottom: 250,
+            bottom: 260,
             right: 73,
-            child: Container(
-              child: Text(
-                'You’re not connected to any\ndevices',
-                style: GoogleFonts.nunito(
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
+            child: Text(
+              ((connection?.isConnected) ?? false)
+                  ? 'You’re connected to ${_device?.name}'
+                  : 'You’re not connected to any\ndevices',
+              style: GoogleFonts.nunito(
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
                 ),
-                textAlign: TextAlign.center,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
           Positioned(
             right: 45,
-            bottom: 180,
-            child: Container(
+            bottom: 165,
+            child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
               child: Text(
                 'Note: If you cannot find the device in the list, please pair the device by going to the Bluetooth Settings',
@@ -399,8 +421,8 @@ class _DevicepgState extends State<Devicepg> {
             ),
           ),
           Positioned(
-            left: 115,
-            bottom: 120,
+            left: 127,
+            bottom: 100,
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.5,
               child: ElevatedButton(
@@ -541,7 +563,6 @@ class _DevicepgState extends State<Devicepg> {
   void _disconnect() async {
     setState(() {
       _isButtonUnavailable = true;
-      _deviceState = 0;
     });
 
     await connection?.close();
@@ -550,22 +571,18 @@ class _DevicepgState extends State<Devicepg> {
       setState(() {
         _connected = false;
         _isButtonUnavailable = false;
+        connection = null;
       });
     }
   }
 
-  Future show(
-    String message, {
-    Duration duration = const Duration(seconds: 3),
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-        ),
-        duration: duration,
-      ),
-    );
+  void show(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 14.0);
   }
 }
