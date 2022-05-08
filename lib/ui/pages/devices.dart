@@ -54,13 +54,15 @@ class _DevicepgState extends State<Devicepg> {
     FlutterBluetoothSerial.instance
         .onStateChanged()
         .listen((BluetoothState state) {
-      setState(() {
-        _bluetoothState = state;
-        if (_bluetoothState == BluetoothState.STATE_OFF) {
-          _isButtonUnavailable = true;
-        }
-        getPairedDevices();
-      });
+      if (mounted) {
+        setState(() {
+          _bluetoothState = state;
+          if (_bluetoothState == BluetoothState.STATE_OFF) {
+            _isButtonUnavailable = true;
+          }
+          getPairedDevices();
+        });
+      }
     });
   }
 
@@ -93,376 +95,388 @@ class _DevicepgState extends State<Devicepg> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-              image: AssetImage("assets/images/home_bg.png"),
-              fit: BoxFit.cover,
-            )),
-          ),
-          Positioned(
-            right: 0,
-            top: MediaQuery.of(context).size.height * 0.06,
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.85,
-              width: MediaQuery.of(context).size.width * 0.85,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, {
+          "connection": connection,
+          "blueDevice": _device,
+        });
+        return false;
+      },
+      child: Scaffold(
+        body: SafeArea(
+            child: Stack(
+          children: [
+            Container(
               decoration: const BoxDecoration(
-                color: Color(0xFFF4F4F9),
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(0),
-                    bottomRight: Radius.circular(0),
-                    topLeft: Radius.circular(40.0),
-                    bottomLeft: Radius.circular(40.0)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(right: 140, top: 23),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Hello,",
-                          style: GoogleFonts.nunito(
-                              textStyle: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey)),
-                        ),
-                        Text(
-                          widget.userDocument['Name'],
-                          style: GoogleFonts.nunito(
-                              textStyle: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w700)),
-                        )
-                      ],
+                  image: DecorationImage(
+                image: AssetImage("assets/images/home_bg.png"),
+                fit: BoxFit.cover,
+              )),
+            ),
+            Positioned(
+              right: 0,
+              top: MediaQuery.of(context).size.height * 0.06,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.85,
+                width: MediaQuery.of(context).size.width * 0.85,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF4F4F9),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(0),
+                      bottomRight: Radius.circular(0),
+                      topLeft: Radius.circular(40.0),
+                      bottomLeft: Radius.circular(40.0)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 140, top: 23),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hello,",
+                            style: GoogleFonts.nunito(
+                                textStyle: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey)),
+                          ),
+                          Text(
+                            widget.userDocument['Name'],
+                            style: GoogleFonts.nunito(
+                                textStyle: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w700)),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.05,
-                        ),
-                        height: MediaQuery.of(context).size.height * 0.655,
-                        width: MediaQuery.of(context).size.width * 0.71,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFDCA2),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(24),
+                    Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.05,
                           ),
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.70,
-                        child: Visibility(
-                          visible: _isButtonUnavailable &&
-                              _bluetoothState == BluetoothState.STATE_ON,
-                          child: const LinearProgressIndicator(
-                            backgroundColor: Color(0xFF191847),
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFFFDCA2)),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 95,
-                        left: 50,
-                        child: Text(
-                          "Bluetooth Connection",
-                          style: GoogleFonts.nunito(
-                            textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
+                          height: MediaQuery.of(context).size.height * 0.655,
+                          width: MediaQuery.of(context).size.width * 0.71,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFDCA2),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(24),
                             ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: 50,
-                        left: 10,
-                        child: Material(
-                          color: Colors.transparent,
-                          shape: const CircleBorder(),
-                          clipBehavior: Clip.hardEdge,
-                          child: IconButton(
-                            icon: const FaIcon(FontAwesomeIcons.circleXmark),
-                            onPressed: () {
-                              //print('hiiiiiiiiii');
-                              //print(_device?.name);
-                              Navigator.pop(context, {
-                                "connection": connection,
-                                "blueDevice": _device,
-                              });
-                            },
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.70,
+                          child: Visibility(
+                            visible: _isButtonUnavailable &&
+                                _bluetoothState == BluetoothState.STATE_ON,
+                            child: const LinearProgressIndicator(
+                              backgroundColor: Color(0xFF191847),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFFFDCA2)),
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: 130,
-                        left: 25,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.only(right: 35),
-                              child: Text(
-                                'Enable Bluetooth',
-                                style: GoogleFonts.nunito(
-                                  textStyle: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
+                        Positioned(
+                          top: 95,
+                          left: 50,
+                          child: Text(
+                            "Bluetooth Connection",
+                            style: GoogleFonts.nunito(
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            Switch(
-                              value: _bluetoothState.isEnabled,
-                              onChanged: (bool value) {
-                                future() async {
-                                  if (value) {
-                                    await FlutterBluetoothSerial.instance
-                                        .requestEnable();
-                                  } else {
-                                    await FlutterBluetoothSerial.instance
-                                        .requestDisable();
-                                  }
-
-                                  await getPairedDevices();
-                                  _isButtonUnavailable = false;
-
-                                  if (_connected) {
-                                    _disconnect();
-                                  }
-                                }
-
-                                future().then((_) {
-                                  setState(() {});
+                          ),
+                        ),
+                        Positioned(
+                          top: 50,
+                          left: 10,
+                          child: Material(
+                            color: Colors.transparent,
+                            shape: const CircleBorder(),
+                            clipBehavior: Clip.hardEdge,
+                            child: IconButton(
+                              icon: const FaIcon(FontAwesomeIcons.circleXmark),
+                              onPressed: () {
+                                //print('hiiiiiiiiii');
+                                //print(_device?.name);
+                                Navigator.pop(context, {
+                                  "connection": connection,
+                                  "blueDevice": _device,
                                 });
                               },
-                            )
-                          ],
+                            ),
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        top: 180,
-                        left: 25,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Container(
-                              margin: const EdgeInsets.only(right: 15),
-                              child: Text(
-                                'Devices:',
-                                style: GoogleFonts.nunito(
-                                  textStyle: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
+                        Positioned(
+                          top: 130,
+                          left: 25,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(right: 35),
+                                child: Text(
+                                  'Enable Bluetooth',
+                                  style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.38,
-                              height: MediaQuery.of(context).size.height * 0.04,
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton2(
-                                  buttonDecoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
+                              Switch(
+                                value: _bluetoothState.isEnabled,
+                                onChanged: (bool value) {
+                                  future() async {
+                                    if (value) {
+                                      await FlutterBluetoothSerial.instance
+                                          .requestEnable();
+                                    } else {
+                                      await FlutterBluetoothSerial.instance
+                                          .requestDisable();
+                                    }
+
+                                    await getPairedDevices();
+                                    _isButtonUnavailable = false;
+
+                                    if (_connected) {
+                                      _disconnect();
+                                    }
+                                  }
+
+                                  future().then((_) {
+                                    setState(() {});
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          top: 180,
+                          left: 25,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Container(
+                                margin: const EdgeInsets.only(right: 15),
+                                child: Text(
+                                  'Devices:',
+                                  style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
-                                  isExpanded: true,
-                                  hint: Text(
-                                    'Select Watch',
+                                ),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.38,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.04,
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton2(
+                                    buttonDecoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white,
+                                    ),
+                                    isExpanded: true,
+                                    hint: Text(
+                                      'Select Watch',
+                                      style: GoogleFonts.nunito(
+                                        textStyle: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.black45,
+                                    ),
+                                    iconSize: 30,
+                                    buttonHeight:
+                                        MediaQuery.of(context).size.height *
+                                            0.04,
+                                    buttonWidth:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    buttonPadding: const EdgeInsets.only(
+                                        left: 20, right: 10),
+                                    dropdownDecoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    items: _getDeviceItems(),
+                                    customItemsIndexes: _getDividersIndexes(),
+                                    itemHeight: 25,
+                                    customItemsHeight: 6,
+                                    itemPadding: const EdgeInsets.only(
+                                      left: 5,
+                                      right: 5,
+                                    ),
+                                    onChanged: (value) => setState(() =>
+                                        _device = value as BluetoothDevice),
+                                    value: _devicesList.isNotEmpty
+                                        ? _device
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          top: 230,
+                          left: 25,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                  right: 24,
+                                ),
+                                padding: const EdgeInsets.all(0),
+                                width: MediaQuery.of(context).size.width * 0.26,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.all(0),
+                                    textStyle: const TextStyle(fontSize: 15),
+                                    primary: const Color(0xffFFC76C),
+                                    onPrimary: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          12), // <-- Radius
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _connected ? 'Disconnect' : 'Connect',
                                     style: GoogleFonts.nunito(
                                       textStyle: const TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                   ),
+                                  onPressed: _isButtonUnavailable
+                                      ? null
+                                      : _connected
+                                          ? _disconnect
+                                          : _connect,
+                                ),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.26,
+                                child: ElevatedButton.icon(
                                   icon: const Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Colors.black45,
+                                    Icons.refresh,
+                                    color: Colors.black,
                                   ),
-                                  iconSize: 30,
-                                  buttonHeight:
-                                      MediaQuery.of(context).size.height * 0.04,
-                                  buttonWidth:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  buttonPadding: const EdgeInsets.only(
-                                      left: 20, right: 10),
-                                  dropdownDecoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  items: _getDeviceItems(),
-                                  customItemsIndexes: _getDividersIndexes(),
-                                  itemHeight: 25,
-                                  customItemsHeight: 6,
-                                  itemPadding: const EdgeInsets.only(
-                                    left: 5,
-                                    right: 5,
-                                  ),
-                                  onChanged: (value) => setState(
-                                      () => _device = value as BluetoothDevice),
-                                  value:
-                                      _devicesList.isNotEmpty ? _device : null,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: 230,
-                        left: 25,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                right: 24,
-                              ),
-                              padding: const EdgeInsets.all(0),
-                              width: MediaQuery.of(context).size.width * 0.26,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(0),
-                                  textStyle: const TextStyle(fontSize: 15),
-                                  primary: const Color(0xffFFC76C),
-                                  onPrimary: Colors.black,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(12), // <-- Radius
-                                  ),
-                                ),
-                                child: Text(
-                                  _connected ? 'Disconnect' : 'Connect',
-                                  style: GoogleFonts.nunito(
-                                    textStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
+                                  style: ElevatedButton.styleFrom(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                                    textStyle: const TextStyle(fontSize: 15),
+                                    primary: const Color(0xffFFC76C),
+                                    onPrimary: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          12), // <-- Radius
                                     ),
                                   ),
-                                ),
-                                onPressed: _isButtonUnavailable
-                                    ? null
-                                    : _connected
-                                        ? _disconnect
-                                        : _connect,
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.26,
-                              child: ElevatedButton.icon(
-                                icon: const Icon(
-                                  Icons.refresh,
-                                  color: Colors.black,
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                                  textStyle: const TextStyle(fontSize: 15),
-                                  primary: const Color(0xffFFC76C),
-                                  onPrimary: Colors.black,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(12), // <-- Radius
-                                  ),
-                                ),
-                                label: Text(
-                                  'Refresh',
-                                  style: GoogleFonts.nunito(
-                                    textStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
+                                  label: Text(
+                                    'Refresh',
+                                    style: GoogleFonts.nunito(
+                                      textStyle: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ),
+                                  onPressed: () async {
+                                    await getPairedDevices().then((_) {
+                                      show('Device list refreshed');
+                                    });
+                                  },
                                 ),
-                                onPressed: () async {
-                                  await getPairedDevices().then((_) {
-                                    show('Device list refreshed');
-                                  });
-                                },
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 260,
-            right: 73,
-            child: Text(
-              ((connection?.isConnected) ?? false)
-                  ? 'You’re connected to ${_device?.name}'
-                  : 'You’re not connected to any\ndevices',
-              style: GoogleFonts.nunito(
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-          Positioned(
-            right: 45,
-            bottom: 165,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
+            Positioned(
+              bottom: 260,
+              right: ((connection?.isConnected) ?? false) ? 100 : 73,
               child: Text(
-                'Note: If you cannot find the device in the list, please pair the device by going to the Bluetooth Settings',
+                ((connection?.isConnected) ?? false)
+                    ? 'You’re connected to\n${_device?.name}'
+                    : 'You’re not connected to any\ndevices',
                 style: GoogleFonts.nunito(
                   textStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w300,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
-          ),
-          Positioned(
-            left: 127,
-            bottom: 100,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 15),
-                  primary: const Color(0xffFFC76C),
-                  onPrimary: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // <-- Radius
-                  ),
-                ),
+            Positioned(
+              right: 45,
+              bottom: 165,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
                 child: Text(
-                  'Bluetooth Settings',
+                  'Note: If you cannot find the device in the list, please pair the device by going to the Bluetooth Settings',
                   style: GoogleFonts.nunito(
                     textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ),
-                onPressed: () {
-                  FlutterBluetoothSerial.instance.openSettings();
-                },
               ),
             ),
-          )
-        ],
-      )),
+            Positioned(
+              left: 127,
+              bottom: 100,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 15),
+                    primary: const Color(0xffFFC76C),
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // <-- Radius
+                    ),
+                  ),
+                  child: Text(
+                    'Bluetooth Settings',
+                    style: GoogleFonts.nunito(
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    FlutterBluetoothSerial.instance.openSettings();
+                  },
+                ),
+              ),
+            )
+          ],
+        )),
+      ),
     );
   }
 
@@ -533,7 +547,7 @@ class _DevicepgState extends State<Devicepg> {
 
           connection?.input?.listen(_onDataReceived).onDone(() {
             print(_messageBuffer);
-            // print(messages);
+            print('disconnected');
             setState(() {
               messageData = _messageBuffer;
             });

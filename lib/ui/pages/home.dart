@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_watch/services/service.dart';
@@ -25,6 +26,21 @@ class _HomepgState extends State<Homepg> {
     } catch (e) {
       print(e);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    FlutterBluetoothSerial.instance
+        .onStateChanged()
+        .listen((BluetoothState state) {
+      if (state == BluetoothState.STATE_OFF) {
+        setState(() {
+          result["connection"] = null;
+          print('blue off');
+        });
+      }
+    });
   }
 
   var result = {};
@@ -131,7 +147,7 @@ class _HomepgState extends State<Homepg> {
                                     ).then((value) {
                                       setState(() {
                                         result = value;
-                                        print(result["connection"] == null);
+                                        //print(result["connection"] == null);
                                       });
                                     });
                                   },
