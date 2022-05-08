@@ -158,6 +158,18 @@ class _DevicepgState extends State<Devicepg> {
                           ),
                         ),
                       ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.70,
+                        child: Visibility(
+                          visible: _isButtonUnavailable &&
+                              _bluetoothState == BluetoothState.STATE_ON,
+                          child: const LinearProgressIndicator(
+                            backgroundColor: Color(0xFF191847),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFFFDCA2)),
+                          ),
+                        ),
+                      ),
                       Positioned(
                         top: 95,
                         left: 50,
