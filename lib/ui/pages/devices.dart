@@ -8,17 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_watch/model/model.dart';
 
 class Devicepg extends StatefulWidget {
-  const Devicepg(
-      {Key? key,
-      required this.userDocument,
-      required this.conn,
-      required this.blueDevice})
-      : super(key: key);
+  const Devicepg({Key? key, required this.userDocument}) : super(key: key);
   final userDocument;
-  final conn;
-  final blueDevice;
+
   @override
   State<Devicepg> createState() => _DevicepgState();
 }
@@ -42,27 +38,38 @@ class _DevicepgState extends State<Devicepg> {
   @override
   void initState() {
     super.initState();
-    connection = widget.conn;
-    _device = widget.blueDevice;
+    Model blueProvider = Provider.of<Model>(context, listen: false);
+    connection = blueProvider.connection;
+    _device = blueProvider.device;
     _connected = connection != null && _device != null ? true : false;
     FlutterBluetoothSerial.instance.state.then((state) {
       setState(() {
         _bluetoothState = state;
       });
+      if (state == BluetoothState.STATE_ON) {
+        blueProvider.changebluetoothEnabled(true);
+      }
     });
     enableBluetooth();
     FlutterBluetoothSerial.instance
         .onStateChanged()
         .listen((BluetoothState state) {
-      if (mounted) {
-        setState(() {
-          _bluetoothState = state;
-          if (_bluetoothState == BluetoothState.STATE_OFF) {
+      _bluetoothState = state;
+      if (_bluetoothState == BluetoothState.STATE_OFF) {
+        if (mounted) {
+          setState(() {
             _isButtonUnavailable = true;
-          }
-          getPairedDevices();
-        });
+            _connected = false;
+            connection = null;
+          });
+        }
+        blueProvider.changebluetoothEnabled(false);
+        blueProvider.setBlueDetails(null, null);
       }
+      if (state == BluetoothState.STATE_ON) {
+        blueProvider.changebluetoothEnabled(true);
+      }
+      getPairedDevices();
     });
   }
 
@@ -530,6 +537,7 @@ class _DevicepgState extends State<Devicepg> {
 
   // Method to connect to bluetooth
   void _connect() async {
+    Model blueProvider = Provider.of<Model>(context, listen: false);
     setState(() {
       _isButtonUnavailable = true;
     });
@@ -541,6 +549,7 @@ class _DevicepgState extends State<Devicepg> {
             .then((_connection) {
           print('Connected to the device');
           connection = _connection;
+          blueProvider.setBlueDetails(_device, connection);
           setState(() {
             _connected = true;
           });
@@ -548,6 +557,7 @@ class _DevicepgState extends State<Devicepg> {
           connection?.input?.listen(_onDataReceived).onDone(() {
             print(_messageBuffer);
             print('disconnected');
+            blueProvider.setBlueDetails(null, null);
             setState(() {
               messageData = _messageBuffer;
             });
@@ -587,6 +597,7 @@ class _DevicepgState extends State<Devicepg> {
 
   // Method to disconnect bluetooth
   void _disconnect() async {
+    Model blueProvider = Provider.of<Model>(context, listen: false);
     setState(() {
       _isButtonUnavailable = true;
     });
@@ -594,6 +605,7 @@ class _DevicepgState extends State<Devicepg> {
     await connection?.close();
     show('Device disconnected');
     if (!((connection?.isConnected) ?? false)) {
+      blueProvider.setBlueDetails(null, null);
       setState(() {
         _connected = false;
         _isButtonUnavailable = false;

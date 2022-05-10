@@ -41,7 +41,8 @@ dependencies:
   flutter_background:
   geocode:
   dropdown_button2:
-  fluttertoast: 
+  fluttertoast:
+  provider: 
 
 
   # The following adds the Cupertino Icons font to your application.

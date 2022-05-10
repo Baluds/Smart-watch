@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_watch/model/model.dart';
 import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/devices.dart';
 import 'package:smart_watch/ui/pages/heartrate.dart';
@@ -31,19 +33,8 @@ class _HomepgState extends State<Homepg> {
   @override
   void initState() {
     super.initState();
-    FlutterBluetoothSerial.instance
-        .onStateChanged()
-        .listen((BluetoothState state) {
-      if (state == BluetoothState.STATE_OFF) {
-        setState(() {
-          result["connection"] = null;
-          print('blue off');
-        });
-      }
-    });
   }
 
-  var result = {};
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -140,25 +131,34 @@ class _HomepgState extends State<Homepg> {
                                         builder: (BuildContext context) =>
                                             Devicepg(
                                           userDocument: userDocument,
-                                          conn: result["connection"],
-                                          blueDevice: result["blueDevice"],
                                         ),
                                       ),
-                                    ).then((value) {
-                                      setState(() {
-                                        result = value;
-                                        //print(result["connection"] == null);
-                                      });
-                                    });
+                                    );
                                   },
-                                  child: Text(
-                                    (result["connection"] != null)
-                                        ? "${result["blueDevice"].name} is connected!"
-                                        : "Your device is not connected!",
-                                    style: GoogleFonts.nunito(
-                                        textStyle: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700)),
+                                  child: Consumer<Model>(
+                                    builder: (context, blueProvider, child) =>
+                                        Text(
+                                      (blueProvider.connection != null &&
+                                              blueProvider.bluetoothEnabled ==
+                                                  true)
+                                          ? "${blueProvider.device!.name} is connected!"
+                                          : "Your device is not connected!",
+                                      style: GoogleFonts.nunito(
+                                          textStyle: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700)),
+                                    ),
+                                    //     Text(
+                                    //   (result["connection"] != null &&
+                                    //           blueProvider.bluetoothEnabled ==
+                                    //               true)
+                                    //       ? "${result["blueDevice"].name} is connected!"
+                                    //       : "Your device is not connected!",
+                                    //   style: GoogleFonts.nunito(
+                                    //       textStyle: const TextStyle(
+                                    //           fontSize: 18,
+                                    //           fontWeight: FontWeight.w700)),
+                                    // ),
                                   ),
                                 ),
                               ),
