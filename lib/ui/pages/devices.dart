@@ -34,10 +34,12 @@ class _DevicepgState extends State<Devicepg> {
   bool isDisconnecting = false;
 
   bool get isConnected => ((connection?.isConnected) ?? false);
+  late Model tesT;
 
   @override
   void initState() {
     super.initState();
+    tesT = Provider.of<Model>(context, listen: false);
     Model blueProvider = Provider.of<Model>(context, listen: false);
     connection = blueProvider.connection;
     _device = blueProvider.device;
@@ -584,6 +586,12 @@ class _DevicepgState extends State<Devicepg> {
   void _onDataReceived(Uint8List data) {
     if (String.fromCharCodes(data) == '\n') {
       print(_messageBuffer);
+      if (_messageBuffer.substring(0, 4) == 'Spo2') {
+        tesT.setSpo2Value(int.parse(_messageBuffer.substring(5)));
+      }
+      if (_messageBuffer.substring(0, 2) == 'HR') {
+        tesT.setHrValue(int.parse(_messageBuffer.substring(3)));
+      }
       if (mounted) {
         setState(() {
           messageData = _messageBuffer;

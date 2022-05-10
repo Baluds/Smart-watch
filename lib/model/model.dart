@@ -5,6 +5,8 @@ class Model extends ChangeNotifier {
   bool bluetoothEnabled = false;
   BluetoothDevice? device;
   BluetoothConnection? connection;
+  int? sp02;
+  int? hr;
 
   void changebluetoothEnabled(value) {
     bluetoothEnabled = value;
@@ -14,7 +16,17 @@ class Model extends ChangeNotifier {
   void setBlueDetails(_device, conn) {
     device = _device;
     connection = conn;
-    print('device is ${device!.name} and connection is ${connection == null}');
+    //print('device is ${device!.name} and connection is ${connection == null}');
+    notifyListeners();
+  }
+
+  void setSpo2Value(value) {
+    sp02 = value;
+    notifyListeners();
+  }
+
+  void setHrValue(value) {
+    hr = value;
     notifyListeners();
   }
 }

@@ -148,17 +148,6 @@ class _HomepgState extends State<Homepg> {
                                               fontSize: 18,
                                               fontWeight: FontWeight.w700)),
                                     ),
-                                    //     Text(
-                                    //   (result["connection"] != null &&
-                                    //           blueProvider.bluetoothEnabled ==
-                                    //               true)
-                                    //       ? "${result["blueDevice"].name} is connected!"
-                                    //       : "Your device is not connected!",
-                                    //   style: GoogleFonts.nunito(
-                                    //       textStyle: const TextStyle(
-                                    //           fontSize: 18,
-                                    //           fontWeight: FontWeight.w700)),
-                                    // ),
                                   ),
                                 ),
                               ),

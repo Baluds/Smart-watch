@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_watch/model/model.dart';
 
 class Spo2pg extends StatelessWidget {
   const Spo2pg({Key? key, required this.userDocument}) : super(key: key);
@@ -148,12 +150,16 @@ class Spo2pg extends StatelessWidget {
                                     Positioned(
                                       left: 70,
                                       top: 25,
-                                      child: Text(
-                                        "75",
-                                        style: GoogleFonts.nunito(
-                                          textStyle: const TextStyle(
-                                            fontSize: 64,
-                                            fontWeight: FontWeight.w700,
+                                      child: Consumer<Model>(
+                                        builder:
+                                            (context, blueProvider, child) =>
+                                                Text(
+                                          '${blueProvider.sp02 ?? '97'}',
+                                          style: GoogleFonts.nunito(
+                                            textStyle: const TextStyle(
+                                              fontSize: 64,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                         ),
                                       ),
