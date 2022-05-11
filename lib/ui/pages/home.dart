@@ -120,33 +120,16 @@ class _HomepgState extends State<Homepg> {
                             const FaIcon(FontAwesomeIcons.circleExclamation),
                             Container(
                               margin: const EdgeInsets.all(10),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkResponse(
-                                  highlightColor: const Color(0xffFFC76C),
-                                  onTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            Devicepg(
-                                          userDocument: userDocument,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Consumer<Model>(
-                                    builder: (context, blueProvider, child) =>
-                                        Text(
-                                      (blueProvider.connection != null &&
-                                              blueProvider.bluetoothEnabled ==
-                                                  true)
-                                          ? "${blueProvider.device!.name} is connected!"
-                                          : "Your device is not connected!",
-                                      style: GoogleFonts.nunito(
-                                          textStyle: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700)),
+                              child: Consumer<Model>(
+                                builder: (context, blueProvider, child) => Text(
+                                  (blueProvider.connection != null &&
+                                          blueProvider.bluetoothEnabled == true)
+                                      ? "${blueProvider.device!.name} is connected!"
+                                      : "Your device is not connected!",
+                                  style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
@@ -155,10 +138,30 @@ class _HomepgState extends State<Homepg> {
                           ],
                         ),
                         Menu(
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          imageName: "assets/images/Profile.png",
+                          width: MediaQuery.of(context).size.width * 0.62,
+                          height: MediaQuery.of(context).size.height * 0.16,
+                          menuColor: const Color(0xFFFFACAC),
                           multiple: 1,
+                          childWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Image.asset(
+                                'assets/images/profile_pic.png',
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
+                              ),
+                              Text(
+                                'Profile',
+                                style: GoogleFonts.nunito(
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           callback: () async {
                             Navigator.push(
                               context,
@@ -171,10 +174,31 @@ class _HomepgState extends State<Homepg> {
                           },
                         ),
                         Menu(
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          imageName: "assets/images/location.png",
+                          width: MediaQuery.of(context).size.width * 0.62,
+                          height: MediaQuery.of(context).size.height * 0.11,
+                          menuColor: const Color(0xFFCCF0C0),
                           multiple: 1,
+                          childWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 20),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.locationDot,
+                                  size: 30,
+                                ),
+                              ),
+                              Text(
+                                'Location',
+                                style: GoogleFonts.nunito(
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           callback: () {
                             Navigator.push(
                               context,
@@ -186,14 +210,72 @@ class _HomepgState extends State<Homepg> {
                             );
                           },
                         ),
+                        Menu(
+                          width: MediaQuery.of(context).size.width * 0.62,
+                          height: MediaQuery.of(context).size.height * 0.11,
+                          menuColor: const Color(0xFFFFDCA2),
+                          multiple: 1,
+                          childWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 20),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.bluetoothB,
+                                  size: 30,
+                                ),
+                              ),
+                              Text(
+                                'Bluetooth',
+                                style: GoogleFonts.nunito(
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          callback: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => Devicepg(
+                                  userDocument: userDocument,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Menu(
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.height * 0.15,
-                              imageName: "assets/images/SPO2.png",
+                              width: MediaQuery.of(context).size.width * 0.29,
+                              height: MediaQuery.of(context).size.height * 0.11,
+                              menuColor: const Color(0xFFBAE5F5),
                               multiple: 2,
+                              childWidget: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/spo21.png',
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                  ),
+                                  Text(
+                                    'Spo2',
+                                    style: GoogleFonts.nunito(
+                                      textStyle: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               callback: () {
                                 Navigator.push(
                                     context,
@@ -205,23 +287,33 @@ class _HomepgState extends State<Homepg> {
                               },
                             ),
                             Menu(
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.height * 0.15,
-                              imageName: "assets/images/SOS.png",
-                              multiple: 3,
-                              callback: () {},
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Menu(
-                                width: MediaQuery.of(context).size.width * 0.3,
+                                width: MediaQuery.of(context).size.width * 0.29,
                                 height:
-                                    MediaQuery.of(context).size.height * 0.15,
-                                imageName: "assets/images/heart_rate.png",
-                                multiple: 2,
+                                    MediaQuery.of(context).size.height * 0.11,
+                                menuColor: const Color(0xFFE2D3FE),
+                                multiple: 3,
+                                childWidget: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/heart.png',
+                                      width: MediaQuery.of(context).size.width *
+                                          0.12,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.12,
+                                    ),
+                                    Text(
+                                      'Heart\nRate',
+                                      style: GoogleFonts.nunito(
+                                        textStyle: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 callback: () {
                                   Navigator.push(
                                     context,
@@ -233,37 +325,6 @@ class _HomepgState extends State<Homepg> {
                                     ),
                                   );
                                 }),
-                            Stack(
-                              children: [
-                                Menu(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.15,
-                                  imageName: "assets/images/fall.png",
-                                  multiple: 3,
-                                  callback: () =>
-                                      fallDialog(context, userDocument),
-                                ),
-                                Positioned(
-                                  bottom:
-                                      MediaQuery.of(context).size.height * 0.04,
-                                  left:
-                                      MediaQuery.of(context).size.width * 0.06,
-                                  child: InkResponse(
-                                    onTap: () =>
-                                        fallDialog(context, userDocument),
-                                    child: Text(
-                                      '  Fall\nDetected',
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
                           ],
                         ),
                       ],
