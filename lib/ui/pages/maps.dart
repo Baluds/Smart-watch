@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
-import 'package:location/location.dart';
-import 'package:geocode/geocode.dart';
+import 'package:location/location.dart' as loc;
+import 'package:geocoding/geocoding.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_watch/model/model.dart';
 
 class Maps extends StatefulWidget {
   const Maps({Key? key}) : super(key: key);
@@ -12,16 +14,14 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> {
-  late LocationData _currentPosition;
+  late loc.LocationData _currentPosition;
   GoogleMapController? _controller;
-  Location location = Location();
-  GeoCode geoCode = GeoCode();
-  late String _address = '';
+  loc.Location location = loc.Location();
   LatLng _initialcameraposition = const LatLng(15.1583353, 76.8802553);
 
   getLoc() async {
     bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    loc.PermissionStatus _permissionGranted;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -32,9 +32,9 @@ class _MapsState extends State<Maps> {
     }
 
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == loc.PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != loc.PermissionStatus.granted) {
         return;
       }
     }
@@ -42,32 +42,31 @@ class _MapsState extends State<Maps> {
     _currentPosition = await location.getLocation();
     _initialcameraposition =
         LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
-    location.onLocationChanged.listen((LocationData currentLocation) {
+    location.onLocationChanged.listen((loc.LocationData currentLocation) {
       //print("${currentLocation.longitude} : ${currentLocation.longitude}");
       if (mounted) {
         setState(() {
           _currentPosition = currentLocation;
           _initialcameraposition =
               LatLng(_currentPosition.latitude!, _currentPosition.longitude!);
-          _getAddress(_currentPosition.latitude!, _currentPosition.longitude!)
-              .then((value) {
-            setState(() {
-              _address = value.streetAddress!;
-            });
-          });
+          _getAddress(_currentPosition.latitude!, _currentPosition.longitude!);
         });
       }
     });
   }
 
-  Future<Address> _getAddress(double lat, double lang) async {
-    var add;
+  void _getAddress(double lat, double lang) async {
+    Model blueProvider = Provider.of<Model>(context, listen: false);
+    late List<Placemark> placemarks;
     try {
-      add = await geoCode.reverseGeocoding(latitude: lat, longitude: lang);
+      Future.delayed(const Duration(seconds: 1), () async {
+        placemarks = await placemarkFromCoordinates(lat, lang);
+        blueProvider.setAddress(placemarks[0]);
+        //print(placemarks);
+      });
     } catch (e) {
       print(e);
     }
-    return add;
   }
 
   @override
@@ -89,25 +88,14 @@ class _MapsState extends State<Maps> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GoogleMap(
-          myLocationEnabled: true,
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: _initialcameraposition,
-            zoom: 14.4746,
-          ),
-          onMapCreated: _onMapCreated,
-        ),
-        Text(
-          "Address: $_address",
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-          ),
-        ),
-      ],
+    return GoogleMap(
+      myLocationEnabled: true,
+      mapType: MapType.normal,
+      initialCameraPosition: CameraPosition(
+        target: _initialcameraposition,
+        zoom: 14.4746,
+      ),
+      onMapCreated: _onMapCreated,
     );
   }
 }

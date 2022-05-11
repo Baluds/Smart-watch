@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_watch/model/model.dart';
 import 'package:smart_watch/ui/pages/maps.dart';
 
 class MapsPage extends StatelessWidget {
@@ -62,9 +64,9 @@ class MapsPage extends StatelessWidget {
                     children: [
                       Container(
                         margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.05,
+                          top: MediaQuery.of(context).size.height * 0.02,
                         ),
-                        height: MediaQuery.of(context).size.height * 0.64,
+                        height: MediaQuery.of(context).size.height * 0.67,
                         width: MediaQuery.of(context).size.width * 0.7,
                         decoration: const BoxDecoration(
                           color: Color(0xFFCCF0C0),
@@ -74,7 +76,7 @@ class MapsPage extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 65,
+                        top: 35,
                         left: 85,
                         child: Text(
                           "Live Location",
@@ -87,7 +89,7 @@ class MapsPage extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 55,
+                        top: 25,
                         left: 15,
                         child: Material(
                           color: Colors.transparent,
@@ -102,18 +104,77 @@ class MapsPage extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 100,
+                        top: 76,
                         left: 28,
                         child: Container(
-                          height: MediaQuery.of(context).size.height * 0.52,
+                          height: MediaQuery.of(context).size.height * 0.42,
                           width: MediaQuery.of(context).size.width * 0.56,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF4F4F9),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF4F4F9),
+                            border: Border.all(
+                              color: const Color(0xFF7DD886),
+                              width: 2,
                             ),
                           ),
                           child: const Maps(),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 22,
+                        left: 28,
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.11,
+                          width: MediaQuery.of(context).size.width * 0.56,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF89DC96),
+                            border: Border.all(
+                              color: const Color(0xFF66B56E),
+                              width: 2,
+                            ),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(24),
+                            ),
+                          ),
+                          child: Center(
+                              child: Column(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top: 5),
+                                child: Text(
+                                  'Address:',
+                                  style: GoogleFonts.nunito(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                  top: 5,
+                                  left: 2,
+                                  right: 2,
+                                ),
+                                child: Consumer<Model>(
+                                  builder: (context, blueProvider, child) =>
+                                      Text(
+                                    blueProvider.address != null
+                                        ? '${blueProvider.address?.street}, ${blueProvider.address?.locality}, ${blueProvider.address?.subAdministrativeArea}, ${blueProvider.address?.administrativeArea}, ${blueProvider.address?.country}-${blueProvider.address?.postalCode} '
+                                        : 'Loading...',
+                                    style: GoogleFonts.nunito(
+                                      textStyle: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
                         ),
                       ),
                     ],

@@ -39,10 +39,10 @@ dependencies:
   cloud_firestore:
   flutter_bluetooth_serial:
   flutter_background:
-  geocode:
   dropdown_button2:
   fluttertoast:
-  provider: 
+  provider:
+  geocoding:
 
 
   # The following adds the Cupertino Icons font to your application.

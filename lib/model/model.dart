@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:geocoding/geocoding.dart';
 
 class Model extends ChangeNotifier {
   bool bluetoothEnabled = false;
@@ -7,6 +8,7 @@ class Model extends ChangeNotifier {
   BluetoothConnection? connection;
   int? sp02;
   int? hr;
+  Placemark? address;
 
   void changebluetoothEnabled(value) {
     bluetoothEnabled = value;
@@ -27,6 +29,11 @@ class Model extends ChangeNotifier {
 
   void setHrValue(value) {
     hr = value;
+    notifyListeners();
+  }
+
+  void setAddress(value) {
+    address = value;
     notifyListeners();
   }
 }
