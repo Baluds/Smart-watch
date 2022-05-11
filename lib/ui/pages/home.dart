@@ -295,13 +295,12 @@ class _HomepgState extends State<Homepg> {
                                 childWidget: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      'assets/images/heart.png',
-                                      width: MediaQuery.of(context).size.width *
-                                          0.12,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.12,
+                                    Container(
+                                      margin: const EdgeInsets.only(right: 8),
+                                      child: const FaIcon(
+                                        FontAwesomeIcons.heartPulse,
+                                        size: 30,
+                                      ),
                                     ),
                                     Text(
                                       'Heart\nRate',
