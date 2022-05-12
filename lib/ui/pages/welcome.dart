@@ -1,13 +1,15 @@
+import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as loc;
 import 'package:smart_watch/services/service.dart';
 import 'package:smart_watch/ui/pages/home.dart';
 import 'package:smart_watch/ui/pages/login.dart';
 import 'package:smart_watch/ui/pages/signup.dart';
 import 'package:smart_watch/widgets/painter.dart';
+import 'package:telephony/telephony.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -23,12 +25,16 @@ class _WelcomePageState extends State<WelcomePage> {
     enablePermission();
   }
 
+  final Telephony telephony = Telephony.instance;
   void enablePermission() async {
+    await telephony.requestSmsPermissions;
+    await FlutterBluetoothSerial.instance.requestEnable();
     await FlutterBackground.initialize(androidConfig: androidConfig);
     await FlutterBackground.enableBackgroundExecution();
-    await FlutterBluetoothSerial.instance.requestEnable();
+    await BackgroundLocation.startLocationService();
+
     bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    loc.PermissionStatus _permissionGranted;
 
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -39,15 +45,15 @@ class _WelcomePageState extends State<WelcomePage> {
     }
 
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == loc.PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != loc.PermissionStatus.granted) {
         return;
       }
     }
   }
 
-  Location location = Location();
+  loc.Location location = loc.Location();
   final auth = Auth();
   final androidConfig = const FlutterBackgroundAndroidConfig(
     notificationTitle: "Smart Watch app",

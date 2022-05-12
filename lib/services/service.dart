@@ -51,4 +51,12 @@ class Auth {
       'EmergencyContact2': profile['EmergencyContact2'],
     });
   }
+
+  Future getData(String uid) async {
+    var document;
+    await users.doc(uid).get().then((event) {
+      document = event.data();
+    });
+    return document;
+  }
 }

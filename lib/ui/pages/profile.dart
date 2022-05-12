@@ -368,4 +368,13 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    namecontroller.dispose();
+    phonecontroller.dispose();
+    emergencycontroller1.dispose();
+    emergencycontroller2.dispose();
+  }
 }

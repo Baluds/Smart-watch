@@ -10,6 +10,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_watch/model/model.dart';
+import 'package:smart_watch/services/sms_service.dart';
 
 class Devicepg extends StatefulWidget {
   const Devicepg({Key? key, required this.userDocument}) : super(key: key);
@@ -29,8 +30,6 @@ class _DevicepgState extends State<Devicepg> {
   bool _connected = false;
   bool _isButtonUnavailable = false;
   String _messageBuffer = '';
-  List<String> messages = [];
-  String messageData = '';
   bool isDisconnecting = false;
 
   bool get isConnected => ((connection?.isConnected) ?? false);
@@ -548,9 +547,6 @@ class _DevicepgState extends State<Devicepg> {
             print(_messageBuffer);
             print('disconnected');
             blueProvider.setBlueDetails(null, null);
-            setState(() {
-              messageData = _messageBuffer;
-            });
             if (isDisconnecting) {
               print('Disconnecting locally!');
             } else {
@@ -572,22 +568,41 @@ class _DevicepgState extends State<Devicepg> {
   }
 
   void _onDataReceived(Uint8List data) {
-    if (String.fromCharCodes(data) == '\n') {
+    _messageBuffer = _messageBuffer + String.fromCharCodes(data);
+    if (data.contains(0)) {
       print(_messageBuffer);
-      if (_messageBuffer.substring(0, 4) == 'Spo2') {
-        tesT.setSpo2Value(int.parse(_messageBuffer.substring(5)));
+      if (_messageBuffer.contains('HR=')) {
+        // print(_messageBuffer.substring(
+        //   _messageBuffer.indexOf('HR=') + 3,
+        //   _messageBuffer.indexOf('HR=') + 6,
+        // ));
+        tesT.setHrValue(
+          int.parse(
+            _messageBuffer.substring(
+              _messageBuffer.indexOf('HR=') + 3,
+              _messageBuffer.indexOf('HR=') + 6,
+            ),
+          ),
+        );
       }
-      if (_messageBuffer.substring(0, 2) == 'HR') {
-        tesT.setHrValue(int.parse(_messageBuffer.substring(3)));
+      if (_messageBuffer.contains('Spo2=')) {
+        // print(_messageBuffer.substring(
+        //   _messageBuffer.indexOf('Spo2=') + 5,
+        //   _messageBuffer.indexOf('Spo2=') + 8,
+        // ));
+        tesT.setSpo2Value(
+          int.parse(
+            _messageBuffer.substring(
+              _messageBuffer.indexOf('Spo2=') + 5,
+              _messageBuffer.indexOf('Spo2=') + 8,
+            ),
+          ),
+        );
       }
-      if (mounted) {
-        setState(() {
-          messageData = _messageBuffer;
-        });
+      if (_messageBuffer.contains('SOS')) {
+        SmsService().sendPanicsms(widget.userDocument['Uid']);
       }
       _messageBuffer = '';
-    } else {
-      _messageBuffer = _messageBuffer + String.fromCharCodes(data);
     }
   }
 
