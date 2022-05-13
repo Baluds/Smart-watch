@@ -11,7 +11,8 @@ class Signupscreen extends StatefulWidget {
   State<Signupscreen> createState() => _SignupscreenState();
 }
 
-class _SignupscreenState extends State<Signupscreen> {
+class _SignupscreenState extends State<Signupscreen>
+    with SingleTickerProviderStateMixin {
   //form key
   final _formKey = GlobalKey<FormState>();
   final auth = Auth();
@@ -20,6 +21,7 @@ class _SignupscreenState extends State<Signupscreen> {
     //await Firebase.initializeApp();
   }
 
+  final RegExp _phoneRegex = RegExp(r'^[0-9]{10}$');
   final RegExp _passRegex =
       RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$');
   final RegExp _emailRegex = RegExp(
@@ -30,10 +32,28 @@ class _SignupscreenState extends State<Signupscreen> {
   String userId = '';
   bool isValidForm = false;
   bool isLoading = false;
+  bool pregnantBool = false;
+  int pregnancy = 3;
   //editing controller
-  final TextEditingController namecontroller = TextEditingController();
-  final TextEditingController emailcontroller = TextEditingController();
-  final TextEditingController passwordcontroller = TextEditingController();
+  late final TabController _tabController;
+  late final TextEditingController namecontroller;
+  late final TextEditingController emailcontroller;
+  late final TextEditingController passwordcontroller;
+  late final TextEditingController phonecontroller;
+  late final TextEditingController emerg1controller;
+  late final TextEditingController emerg2controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    namecontroller = TextEditingController();
+    emailcontroller = TextEditingController();
+    passwordcontroller = TextEditingController();
+    phonecontroller = TextEditingController();
+    emerg1controller = TextEditingController();
+    emerg2controller = TextEditingController();
+  }
 
   validateSignUp() async {
     if (_formKey.currentState!.validate()) {
@@ -53,7 +73,15 @@ class _SignupscreenState extends State<Signupscreen> {
           _error = '';
         });
         userId = await auth.signUp(
-            emailcontroller.text, passwordcontroller.text, namecontroller.text);
+          emailcontroller.text,
+          passwordcontroller.text,
+          namecontroller.text,
+          phonecontroller.text,
+          emerg1controller.text,
+          emerg2controller.text,
+          pregnantBool,
+          pregnancy,
+        );
         setState(() {
           isLoading = false;
         });
@@ -211,6 +239,93 @@ class _SignupscreenState extends State<Signupscreen> {
         ),
       ),
     );
+    final phoneField = TextFormField(
+      autofocus: false,
+      controller: phonecontroller,
+      keyboardType: TextInputType.phone,
+      validator: (inputValue) {
+        if (inputValue!.isEmpty) {
+          return "Number field can't be empty!";
+        }
+        if (!_phoneRegex.hasMatch(inputValue)) {
+          return "Please enter proper number";
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        phonecontroller.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white,
+        hintText: "Phone Number",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+    final emerg1Field = TextFormField(
+      autofocus: false,
+      controller: emerg1controller,
+      keyboardType: TextInputType.phone,
+      validator: (inputValue) {
+        if (inputValue!.isEmpty) {
+          return "Number field can't be empty!";
+        }
+        if (!_phoneRegex.hasMatch(inputValue)) {
+          return "Please enter proper number";
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        emerg1controller.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white,
+        hintText: "Emergency Contact 1",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+    final emerg2Field = TextFormField(
+      autofocus: false,
+      controller: emerg2controller,
+      keyboardType: TextInputType.phone,
+      validator: (inputValue) {
+        if (inputValue!.isEmpty) {
+          return "Number field can't be empty!";
+        }
+        if (!_phoneRegex.hasMatch(inputValue)) {
+          return "Please enter proper number";
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        emerg2controller.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white,
+        hintText: "Emergency Contact 2",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
     final loginbutton = ElevatedButton(
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(
@@ -228,6 +343,76 @@ class _SignupscreenState extends State<Signupscreen> {
         'Create an account',
       ),
     );
+    final pregnant = Row(
+      children: [
+        Text(
+          'Are you pregnant?',
+          style: GoogleFonts.nunito(
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        Switch(
+          value: pregnantBool,
+          onChanged: (bool value) {
+            setState(() {
+              pregnantBool = !pregnantBool;
+              pregnantBool == false ? pregnancy = 3 : pregnancy = pregnancy;
+            });
+          },
+        ),
+      ],
+    );
+    final pregTab = TabBar(
+      controller: _tabController,
+      onTap: (index) {
+        print(index);
+        setState(() {
+          pregnancy = index;
+        });
+      },
+      unselectedLabelColor: const Color(0xFF191847),
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicator: BoxDecoration(
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 255, 157, 0),
+            Color(0xFFFFC76C),
+            Color.fromARGB(255, 255, 209, 134),
+          ]),
+          borderRadius: BorderRadius.circular(50),
+          color: const Color(0xFF191847)),
+      tabs: const [
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "First Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Second Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Third Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F9),
       body: Center(
@@ -236,6 +421,7 @@ class _SignupscreenState extends State<Signupscreen> {
                 color: Color(0xffFFC76C),
               )
             : SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 child: Form(
                   key: _formKey,
                   child: Padding(
@@ -250,7 +436,7 @@ class _SignupscreenState extends State<Signupscreen> {
                               margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                             )),
                         const Padding(
-                            padding: EdgeInsets.all(10),
+                            padding: EdgeInsets.all(20),
                             child: Text(
                               'Create an account',
                               style: TextStyle(
@@ -271,7 +457,34 @@ class _SignupscreenState extends State<Signupscreen> {
                           child: passwordField,
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(5),
+                          child: phoneField,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: emerg1Field,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: emerg2Field,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: pregnant,
+                        ),
+                        pregnantBool
+                            ? Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: pregTab,
+                              )
+                            : Container(),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                            top: 20,
+                            bottom: 5,
+                          ),
                           child: loginbutton,
                         ),
                         Padding(
@@ -309,6 +522,9 @@ class _SignupscreenState extends State<Signupscreen> {
     namecontroller.dispose();
     emailcontroller.dispose();
     passwordcontroller.dispose();
+    phonecontroller.dispose();
+    emerg1controller.dispose();
+    emerg2controller.dispose();
     super.dispose();
   }
 }

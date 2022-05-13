@@ -13,17 +13,21 @@ class EditProfile extends StatefulWidget {
   State<EditProfile> createState() => _EditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileState extends State<EditProfile>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   bool isValidForm = false;
   String _error = '';
   final auth = Auth();
   bool isLoading = false;
+  bool pregnantBool = false;
+  int pregnancy = 3;
   late TextEditingController namecontroller;
   late TextEditingController emailcontroller;
   late TextEditingController phonecontroller;
   late TextEditingController emergencycontroller1;
   late TextEditingController emergencycontroller2;
+  late final TabController _tabController;
 
   final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
@@ -32,6 +36,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
     namecontroller = TextEditingController(text: widget.userDocument['Name']);
     emailcontroller = TextEditingController(text: widget.userDocument['Email']);
     phonecontroller = TextEditingController(text: widget.userDocument['Phone']);
@@ -39,6 +44,10 @@ class _EditProfileState extends State<EditProfile> {
         TextEditingController(text: widget.userDocument['EmergencyContact1']);
     emergencycontroller2 =
         TextEditingController(text: widget.userDocument['EmergencyContact2']);
+    pregnantBool = widget.userDocument['IsPregnant'];
+    _tabController.index = widget.userDocument['Pregnancy'] == 3
+        ? 1
+        : widget.userDocument['Pregnancy'];
   }
 
   validateSignUp() async {
@@ -64,6 +73,8 @@ class _EditProfileState extends State<EditProfile> {
           'Phone': phonecontroller.text,
           'EmergencyContact1': emergencycontroller1.text,
           'EmergencyContact2': emergencycontroller2.text,
+          'IsPregnant': pregnantBool,
+          'Pregnancy': pregnantBool == false ? 3 : pregnancy,
         });
         setState(() {
           isLoading = false;
@@ -287,6 +298,76 @@ class _EditProfileState extends State<EditProfile> {
         'Submit',
       ),
     );
+    final pregnant = Row(
+      children: [
+        Text(
+          'Are you pregnant?',
+          style: GoogleFonts.nunito(
+            textStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        Switch(
+          value: pregnantBool,
+          onChanged: (bool value) {
+            setState(() {
+              pregnantBool = !pregnantBool;
+              pregnantBool == false ? pregnancy = 3 : pregnancy = pregnancy;
+            });
+          },
+        ),
+      ],
+    );
+    final pregTab = TabBar(
+      controller: _tabController,
+      onTap: (index) {
+        print(index);
+        setState(() {
+          pregnancy = index;
+        });
+      },
+      unselectedLabelColor: const Color(0xFF191847),
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicator: BoxDecoration(
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 255, 157, 0),
+            Color(0xFFFFC76C),
+            Color.fromARGB(255, 255, 209, 134),
+          ]),
+          borderRadius: BorderRadius.circular(50),
+          color: const Color(0xFF191847)),
+      tabs: const [
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "First Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Second Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Third Trimester",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
     return Container(
       constraints: const BoxConstraints.expand(),
       decoration: const BoxDecoration(
@@ -350,14 +431,24 @@ class _EditProfileState extends State<EditProfile> {
                             child: emergencyfield1,
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                              top: 10,
-                              left: 10,
-                              right: 10,
-                              bottom: 15,
-                            ),
+                            padding: const EdgeInsets.all(10),
                             child: emergencyfield2,
                           ),
+                          Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: pregnant,
+                          ),
+                          pregnantBool
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 5,
+                                    left: 5,
+                                    right: 5,
+                                    bottom: 15,
+                                  ),
+                                  child: pregTab,
+                                )
+                              : Container(),
                           loginbutton,
                         ],
                       ),
