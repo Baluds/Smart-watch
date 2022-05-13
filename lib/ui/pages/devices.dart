@@ -601,7 +601,12 @@ class _DevicepgState extends State<Devicepg> {
         );
       }
       if (_messageBuffer.contains('SOS')) {
-        SmsService().sendPanicsms(widget.userDocument['Uid']);
+        SmsService()
+            .sendPanicsms(widget.userDocument['Uid'], widget.userDocument);
+      }
+      if (_messageBuffer.contains('FALL')) {
+        SmsService()
+            .sendFallsms(widget.userDocument['Uid'], widget.userDocument);
       }
       _messageBuffer = '';
     }
