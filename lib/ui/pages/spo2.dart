@@ -3,10 +3,55 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_watch/model/model.dart';
+import 'package:smart_watch/services/service.dart';
 
-class Spo2pg extends StatelessWidget {
+class Spo2pg extends StatefulWidget {
   const Spo2pg({Key? key, required this.userDocument}) : super(key: key);
   final userDocument;
+
+  @override
+  State<Spo2pg> createState() => _Spo2pgState();
+}
+
+class _Spo2pgState extends State<Spo2pg> {
+  var document;
+  @override
+  void initState() {
+    super.initState();
+    Auth().getData(widget.userDocument['Uid']).then((value) {
+      setState(() {
+        document = value;
+      });
+    });
+  }
+
+  bool sleepPositionDetection(int spo2) {
+    var pregnancySpo2 = document == null
+        ? widget.userDocument['Pregnancy']
+        : document['Pregnancy'];
+    if (pregnancySpo2 == 3) {
+      if (spo2 >= 95 && spo2 <= 100) {
+        return true;
+      }
+      return false;
+    } else if (pregnancySpo2 == 2) {
+      if (spo2 >= 93.4 && spo2 <= 98.5) {
+        return true;
+      }
+      return false;
+    } else if (pregnancySpo2 == 1) {
+      if (spo2 >= 92.9 && spo2 <= 99.3) {
+        return true;
+      }
+      return false;
+    } else {
+      if (spo2 >= 94.3 && spo2 <= 99.4) {
+        return true;
+      }
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +97,7 @@ class Spo2pg extends StatelessWidget {
                                     color: Colors.grey)),
                           ),
                           Text(
-                            userDocument['Name'],
+                            widget.userDocument['Name'],
                             style: GoogleFonts.nunito(
                                 textStyle: const TextStyle(
                                     fontSize: 24, fontWeight: FontWeight.w700)),
@@ -184,13 +229,20 @@ class Spo2pg extends StatelessWidget {
                               Container(
                                 margin:
                                     const EdgeInsets.only(top: 15, bottom: 10),
-                                child: Text(
-                                  "Your Oxygen Level is Abnormal!\n           Seek Medical Help.",
-                                  style: GoogleFonts.nunito(
-                                    textStyle: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
+                                child: Consumer<Model>(
+                                  builder: (context, blueProvider, child) =>
+                                      Text(
+                                    blueProvider.sp02! >= 90 &&
+                                            blueProvider.sp02! <= 100
+                                        ? "Your Oxygen Level is normal!\n"
+                                        : "Your Oxygen Level is Abnormal!\nSeek Medical Help.",
+                                    style: GoogleFonts.nunito(
+                                      textStyle: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
@@ -218,13 +270,21 @@ class Spo2pg extends StatelessWidget {
                                     Positioned(
                                       top: 35,
                                       left: 20,
-                                      child: Text(
-                                        "Your are not sleeping in the\n           right posiiton.",
-                                        style: GoogleFonts.nunito(
-                                          textStyle: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
+                                      child: Consumer<Model>(
+                                        builder:
+                                            (context, blueProvider, child) =>
+                                                Text(
+                                          sleepPositionDetection(
+                                                  blueProvider.sp02 ?? 97)
+                                              ? "Your are sleeping in the\nright posiiton."
+                                              : "Your are not sleeping in the\nright posiiton.",
+                                          style: GoogleFonts.nunito(
+                                            textStyle: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
