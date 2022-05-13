@@ -154,7 +154,7 @@ class Spo2pg extends StatelessWidget {
                                         builder:
                                             (context, blueProvider, child) =>
                                                 Text(
-                                          '${blueProvider.sp02 ?? '97'}',
+                                          '${blueProvider.sp02}',
                                           style: GoogleFonts.nunito(
                                             textStyle: const TextStyle(
                                               fontSize: 64,

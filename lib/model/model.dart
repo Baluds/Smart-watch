@@ -6,8 +6,8 @@ class Model extends ChangeNotifier {
   bool bluetoothEnabled = false;
   BluetoothDevice? device;
   BluetoothConnection? connection;
-  int? sp02;
-  int? hr;
+  int? sp02 = 97;
+  int? hr = 90;
   Placemark? address;
 
   void changebluetoothEnabled(value) {

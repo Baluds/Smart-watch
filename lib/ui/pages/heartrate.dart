@@ -154,7 +154,7 @@ class Heartratepg extends StatelessWidget {
                                         builder:
                                             (context, blueProvider, child) =>
                                                 Text(
-                                          '${blueProvider.hr ?? '90'}',
+                                          '${blueProvider.hr}',
                                           style: GoogleFonts.nunito(
                                             textStyle: const TextStyle(
                                               fontSize: 64,
@@ -183,12 +183,18 @@ class Heartratepg extends StatelessWidget {
                               ),
                               Container(
                                 margin: const EdgeInsets.all(10),
-                                child: Text(
-                                  "Your Heart Rate is Normal!",
-                                  style: GoogleFonts.nunito(
-                                    textStyle: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
+                                child: Consumer<Model>(
+                                  builder: (context, blueProvider, child) =>
+                                      Text(
+                                    blueProvider.hr! >= 60 &&
+                                            blueProvider.hr! <= 100
+                                        ? "Your Heart Rate is Normal!"
+                                        : "Your Heart Rate is Not Normal!",
+                                    style: GoogleFonts.nunito(
+                                      textStyle: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ),
                                 ),
