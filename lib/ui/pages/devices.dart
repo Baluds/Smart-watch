@@ -556,11 +556,12 @@ class _DevicepgState extends State<Devicepg> {
               setState(() {});
             }
           });
+          show('Device connected');
         }).catchError((error) {
+          show('Couldn\'t connect to Device');
           print('Cannot connect, exception occurred');
           print(error);
         });
-        show('Device connected');
 
         setState(() => _isButtonUnavailable = false);
       }

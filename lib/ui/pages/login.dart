@@ -203,7 +203,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                                   const ForgetPassword()));
                                     },
                                     child: const Text(
-                                      'Forget Password?',
+                                      'Forgot Password?',
                                       textAlign: TextAlign.end,
                                     ),
                                   )),
