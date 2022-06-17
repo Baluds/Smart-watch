@@ -53,6 +53,18 @@ class SmsService {
     var userDocument = await Auth().getData(uid);
     String person =
         userDocument == null ? document["Name"] : userDocument["Name"];
+    String to_emergency1 = userDocument == null
+        ? document["EmergencyContact1mail"]
+        : userDocument["EmergencyContact1mail"];
+    String to_emergency2 = userDocument == null
+        ? document["EmergencyContact2mail"]
+        : userDocument["EmergencyContact2mail"];
+    String to_emergency3 = userDocument == null
+        ? document["EmergencyContact3mail"]
+        : userDocument["EmergencyContact3mail"];
+    String to_emergency4 = userDocument == null
+        ? document["EmergencyContact4mail"]
+        : userDocument["EmergencyContact4mail"];
     Location _currentPosition;
     _currentPosition = await BackgroundLocation().getCurrentLocation();
     final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
@@ -73,6 +85,10 @@ class SmsService {
               'https://www.google.com/maps/search/?api=1&query=${_currentPosition.latitude}%2C${_currentPosition.longitude}',
           'to_address': 'smartwatchproject22@gmail.com',
           'reply_to': 'smartwatchproject22@gmail.com',
+          'to_emergency1': to_emergency1,
+          'to_emergency2': to_emergency2,
+          'to_emergency3': to_emergency3,
+          'to_emergency4': to_emergency4,
         }
       }),
     );

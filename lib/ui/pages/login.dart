@@ -271,7 +271,9 @@ class _LoginscreenState extends State<Loginscreen>
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),
-                          child: tabVal == 0 ? emailField : phoneField,
+                          //child: tabVal == 0 ? emailField : phoneField,
+                          //implement family member login
+                          child: emailField,
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),

@@ -27,6 +27,12 @@ class _EditProfileState extends State<EditProfile>
   late TextEditingController phonecontroller;
   late TextEditingController emergencycontroller1;
   late TextEditingController emergencycontroller2;
+  late TextEditingController emergencycontroller3;
+  late TextEditingController emergencycontroller4;
+  late final TextEditingController emerg1mailcontroller;
+  late final TextEditingController emerg2mailcontroller;
+  late final TextEditingController emerg3mailcontroller;
+  late final TextEditingController emerg4mailcontroller;
   late final TabController _tabController;
 
   final RegExp _emailRegex = RegExp(
@@ -44,6 +50,18 @@ class _EditProfileState extends State<EditProfile>
         TextEditingController(text: widget.userDocument['EmergencyContact1']);
     emergencycontroller2 =
         TextEditingController(text: widget.userDocument['EmergencyContact2']);
+    emergencycontroller3 =
+        TextEditingController(text: widget.userDocument['EmergencyContact3']);
+    emergencycontroller4 =
+        TextEditingController(text: widget.userDocument['EmergencyContact4']);
+    emerg1mailcontroller = TextEditingController(
+        text: widget.userDocument['EmergencyContact1mail']);
+    emerg2mailcontroller = TextEditingController(
+        text: widget.userDocument['EmergencyContact2mail']);
+    emerg3mailcontroller = TextEditingController(
+        text: widget.userDocument['EmergencyContact3mail']);
+    emerg4mailcontroller = TextEditingController(
+        text: widget.userDocument['EmergencyContact4mail']);
     pregnantBool = widget.userDocument['IsPregnant'];
     _tabController.index = widget.userDocument['Pregnancy'] == 3
         ? 1
@@ -73,6 +91,12 @@ class _EditProfileState extends State<EditProfile>
           'Phone': phonecontroller.text,
           'EmergencyContact1': emergencycontroller1.text,
           'EmergencyContact2': emergencycontroller2.text,
+          'EmergencyContact3': emergencycontroller3.text,
+          'EmergencyContact4': emergencycontroller4.text,
+          'EmergencyContact1mail': emerg1mailcontroller.text,
+          'EmergencyContact2mail': emerg2mailcontroller.text,
+          'EmergencyContact3mail': emerg3mailcontroller.text,
+          'EmergencyContact4mail': emerg4mailcontroller.text,
           'IsPregnant': pregnantBool,
           'Pregnancy': pregnantBool == false ? 3 : pregnancy,
         });
@@ -211,7 +235,7 @@ class _EditProfileState extends State<EditProfile>
           return null;
         },
         onSaved: (value) {
-          emailcontroller.text = value!;
+          phonecontroller.text = value!;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -239,7 +263,7 @@ class _EditProfileState extends State<EditProfile>
           return null;
         },
         onSaved: (value) {
-          emailcontroller.text = value!;
+          emergencycontroller1.text = value!;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -267,7 +291,7 @@ class _EditProfileState extends State<EditProfile>
           return null;
         },
         onSaved: (value) {
-          emailcontroller.text = value!;
+          emergencycontroller2.text = value!;
         },
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
@@ -275,6 +299,178 @@ class _EditProfileState extends State<EditProfile>
           filled: true,
           fillColor: Colors.white,
           hintText: "Emergency Contact 2",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+    final emergencyfield3 = TextFormField(
+        autofocus: false,
+        controller: emergencycontroller3,
+        keyboardType: TextInputType.phone,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Phone field can't be empty!";
+          }
+          if (!_phoneRegex.hasMatch(inputValue)) {
+            return "Please enter proper number";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emergencycontroller3.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency Contact 3",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+    final emergencyfield4 = TextFormField(
+        autofocus: false,
+        controller: emergencycontroller4,
+        keyboardType: TextInputType.phone,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Phone field can't be empty!";
+          }
+          if (!_phoneRegex.hasMatch(inputValue)) {
+            return "Please enter proper number";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emergencycontroller4.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency Contact 4",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+
+    final emerg1mailField = TextFormField(
+        autofocus: false,
+        controller: emerg1mailcontroller,
+        keyboardType: TextInputType.emailAddress,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Email field can't be empty!";
+          }
+          if (!_emailRegex.hasMatch(inputValue)) {
+            return "Please enter proper email";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emerg1mailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency contact 1 Email Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+
+    final emerg2mailField = TextFormField(
+        autofocus: false,
+        controller: emerg2mailcontroller,
+        keyboardType: TextInputType.emailAddress,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Email field can't be empty!";
+          }
+          if (!_emailRegex.hasMatch(inputValue)) {
+            return "Please enter proper email";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emerg2mailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency contact 2 Email Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+
+    final emerg3mailField = TextFormField(
+        autofocus: false,
+        controller: emerg3mailcontroller,
+        keyboardType: TextInputType.emailAddress,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Email field can't be empty!";
+          }
+          if (!_emailRegex.hasMatch(inputValue)) {
+            return "Please enter proper email";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emerg3mailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency contact 3 Email Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ));
+
+    final emerg4mailField = TextFormField(
+        autofocus: false,
+        controller: emerg4mailcontroller,
+        keyboardType: TextInputType.emailAddress,
+        validator: (inputValue) {
+          if (inputValue!.isEmpty) {
+            return "Email field can't be empty!";
+          }
+          if (!_emailRegex.hasMatch(inputValue)) {
+            return "Please enter proper email";
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          emerg4mailcontroller.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(8),
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Emergency contact 1 Email Address",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -432,7 +628,31 @@ class _EditProfileState extends State<EditProfile>
                           ),
                           Padding(
                             padding: const EdgeInsets.all(10),
+                            child: emerg1mailField,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
                             child: emergencyfield2,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emerg2mailField,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emergencyfield3,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emerg3mailField,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emergencyfield4,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: emerg4mailField,
                           ),
                           Padding(
                             padding: const EdgeInsets.all(5),
