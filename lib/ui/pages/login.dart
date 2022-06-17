@@ -13,21 +13,34 @@ class Loginscreen extends StatefulWidget {
   State<Loginscreen> createState() => _LoginscreenState();
 }
 
-class _LoginscreenState extends State<Loginscreen> {
+class _LoginscreenState extends State<Loginscreen>
+    with SingleTickerProviderStateMixin {
   //form key
   final auth = Auth();
   var userId;
   final _formKey = GlobalKey<FormState>();
+  final RegExp _phoneRegex = RegExp(r'^[0-9]{10}$');
   final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
   String _error = '';
   bool isValidForm = false;
   bool isLoading = false;
+  int tabVal = 0;
 
   //editing controller
-  final TextEditingController emailcontroller = TextEditingController();
-  final TextEditingController passwordcontroller = TextEditingController();
+  late final TextEditingController emailcontroller;
+  late final TextEditingController passwordcontroller;
+  late final TabController _tabController;
+  late final TextEditingController phonecontroller;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    emailcontroller = TextEditingController();
+    passwordcontroller = TextEditingController();
+    phonecontroller = TextEditingController();
+  }
 
   validateSignIn() async {
     if (_formKey.currentState!.validate()) {
@@ -143,6 +156,80 @@ class _LoginscreenState extends State<Loginscreen> {
         'Login now',
       ),
     );
+
+    final typeTab = TabBar(
+      controller: _tabController,
+      onTap: (index) {
+        print(index);
+        setState(() {
+          tabVal = index;
+        });
+      },
+      unselectedLabelColor: const Color(0xFF191847),
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicator: BoxDecoration(
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 255, 157, 0),
+            Color.fromARGB(255, 255, 157, 0),
+            Color.fromARGB(199, 255, 157, 0),
+            Color(0xFFFFC76C),
+            Color(0xFFFFC76C),
+            //Color.fromARGB(255, 255, 209, 134),
+          ]),
+          borderRadius: BorderRadius.circular(50),
+          color: const Color(0xFF191847)),
+      tabs: const [
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Watch User",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Tab(
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Family Member",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    final phoneField = TextFormField(
+      autofocus: false,
+      controller: phonecontroller,
+      keyboardType: TextInputType.phone,
+      validator: (inputValue) {
+        if (inputValue!.isEmpty) {
+          return "Number field can't be empty!";
+        }
+        if (!_phoneRegex.hasMatch(inputValue)) {
+          return "Please enter proper number";
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        phonecontroller.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8),
+        filled: true,
+        fillColor: Colors.white,
+        hintText: "Phone Number",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: const Color(0xffF4F4F9),
       body: Center(
@@ -174,8 +261,17 @@ class _LoginscreenState extends State<Loginscreen> {
                               ),
                             )),
                         Padding(
+                          padding: const EdgeInsets.only(
+                            top: 5,
+                            left: 5,
+                            right: 5,
+                            bottom: 35,
+                          ),
+                          child: typeTab,
+                        ),
+                        Padding(
                           padding: const EdgeInsets.all(10),
-                          child: emailField,
+                          child: tabVal == 0 ? emailField : phoneField,
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10),
@@ -189,7 +285,7 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Column(
                             children: [
                               Align(

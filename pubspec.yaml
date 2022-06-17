@@ -45,6 +45,7 @@ dependencies:
   geocoding:
   telephony:
   background_location:
+  http:
 
 
   # The following adds the Cupertino Icons font to your application.
